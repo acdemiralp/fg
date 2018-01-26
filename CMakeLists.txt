@@ -19,6 +19,9 @@ set(PROJECT_SOURCES
   cmake/import_library.cmake
   
   include/fg/framegraph.hpp
+  include/fg/node.hpp
+  include/fg/render_resource.hpp
+  include/fg/render_task.hpp
 )
 include(assign_source_group)
 assign_source_group(${PROJECT_SOURCES})

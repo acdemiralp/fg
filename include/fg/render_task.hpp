@@ -12,10 +12,10 @@ class render_task_base : public node
 {
 public:
   render_task_base           ()                              = default;
-  render_task_base           (const render_task_base&  that) = default;
+  render_task_base           (const render_task_base&  that) = delete ;
   render_task_base           (      render_task_base&& temp) = default;
   virtual ~render_task_base  ()                              = default;
-  render_task_base& operator=(const render_task_base&  that) = default;
+  render_task_base& operator=(const render_task_base&  that) = delete ;
   render_task_base& operator=(      render_task_base&& temp) = default;
 
   virtual void setup  ()       = 0;
@@ -32,10 +32,10 @@ public:
   {
     
   }
-  render_task           (const render_task&  that) = default;
+  render_task           (const render_task&  that) = delete ;
   render_task           (      render_task&& temp) = default;
   virtual ~render_task  ()                         = default;
-  render_task& operator=(const render_task&  that) = default;
+  render_task& operator=(const render_task&  that) = delete ;
   render_task& operator=(      render_task&& temp) = default;
 
   void setup  ()       override
@@ -59,10 +59,10 @@ public:
   {
     
   }
-  render_task           (const render_task&  that) = default;
+  render_task           (const render_task&  that) = delete ;
   render_task           (      render_task&& temp) = default;
   virtual ~render_task  ()                         = default;
-  render_task& operator=(const render_task&  that) = default;
+  render_task& operator=(const render_task&  that) = delete ;
   render_task& operator=(      render_task&& temp) = default;
 
   void setup  ()       override

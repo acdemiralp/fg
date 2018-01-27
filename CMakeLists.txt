@@ -22,6 +22,7 @@ set(PROJECT_SOURCES
   include/fg/node.hpp
   include/fg/render_resource.hpp
   include/fg/render_task.hpp
+  include/fg/types.hpp
 )
 include(assign_source_group)
 assign_source_group(${PROJECT_SOURCES})

@@ -5,19 +5,7 @@
 
 namespace fg
 {
-class render_resource : public node
-{
-public:
-  render_resource           ()                             = default;
-  render_resource           (const render_resource&  that) = default;
-  render_resource           (      render_resource&& temp) = default;
-  virtual ~render_resource  ()                             = default;
-  render_resource& operator=(const render_resource&  that) = default;
-  render_resource& operator=(      render_resource&& temp) = default;
-
-protected:
-
-};
+using render_resource = node;
 }
 
 #endif

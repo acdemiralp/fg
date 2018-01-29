@@ -6,7 +6,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace ra
+namespace fg
 {
 template<typename... types>
 class registry

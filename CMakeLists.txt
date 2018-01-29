@@ -20,7 +20,6 @@ set(PROJECT_SOURCES
   
   include/fg/builder.hpp
   include/fg/framegraph.hpp
-  include/fg/realize.hpp
   include/fg/registry.hpp
   include/fg/render_task.hpp
   include/fg/resource.hpp

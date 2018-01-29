@@ -1,6 +1,9 @@
 #ifndef FG_BUILDER_HPP_
 #define FG_BUILDER_HPP_
 
+#include <fg/framegraph.hpp>
+#include <fg/resource.hpp>
+
 namespace fg
 {
 class builder
@@ -13,8 +16,24 @@ public:
   builder& operator=(const builder&  that) = default;
   builder& operator=(      builder&& temp) = default;
 
-protected:
+  template<typename type>
+  resource<type> read  (const resource<type>& resource) const
+  {
+    
+  }
+  template<typename type>
+  resource<type> write (const resource<type>& resource)
+  {
+    
+  }
+  template<typename type>
+  resource<type> create()
+  {
+    
+  }
 
+protected:
+  framegraph* framegraph_;
 };
 }
 

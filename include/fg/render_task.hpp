@@ -5,8 +5,22 @@
 
 namespace fg
 {
+class render_task_base
+{
+public:
+  render_task_base           ()                              = default;
+  render_task_base           (const render_task_base&  that) = delete ;
+  render_task_base           (      render_task_base&& temp) = default;
+  virtual ~render_task_base  ()                              = default;
+  render_task_base& operator=(const render_task_base&  that) = delete ;
+  render_task_base& operator=(      render_task_base&& temp) = default;
+
+  virtual void setup  ()       = 0;
+  virtual void execute() const = 0;
+};
+
 template<typename type>
-class render_task
+class render_task : public render_task_base
 {
 public:
   render_task           (const std::function<void(type&)>& setup, const std::function<void(const type&)>& execute) : setup_(setup), execute_(execute)
@@ -19,11 +33,11 @@ public:
   render_task& operator=(const render_task&  that) = delete ;
   render_task& operator=(      render_task&& temp) = default;
 
-  void setup  ()
+  void setup  ()       override
   {
     setup_  (data_);
   }
-  void execute() const
+  void execute() const override
   {
     execute_(data_);
   }

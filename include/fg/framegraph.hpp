@@ -66,10 +66,6 @@ public:
     return render_resource;
   }
 
-  void               setup             ()                                const
-  {
-    
-  }
   void               execute           ()                                const
   {
     

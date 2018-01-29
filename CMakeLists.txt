@@ -18,11 +18,12 @@ set(PROJECT_SOURCES
   cmake/assign_source_group.cmake
   cmake/import_library.cmake
   
+  include/fg/builder.hpp
   include/fg/framegraph.hpp
-  include/fg/node.hpp
-  include/fg/render_resource.hpp
+  include/fg/realize.hpp
+  include/fg/registry.hpp
   include/fg/render_task.hpp
-  include/fg/types.hpp
+  include/fg/resource.hpp
 )
 include(assign_source_group)
 assign_source_group(${PROJECT_SOURCES})
@@ -49,6 +50,8 @@ target_include_directories(${PROJECT_NAME}_
 target_include_directories(${PROJECT_NAME}_ PUBLIC ${PROJECT_INCLUDE_DIRS})
 target_link_libraries     (${PROJECT_NAME}_ PUBLIC ${PROJECT_LIBRARIES})
 set_target_properties     (${PROJECT_NAME}_ PROPERTIES LINKER_LANGUAGE CXX)
+set_property              (TARGET ${PROJECT_NAME}_ PROPERTY CXX_STANDARD 17)
+set_property              (TARGET ${PROJECT_NAME}_ PROPERTY CXX_STANDARD_REQUIRED ON)
 
 ##################################################    Testing     ##################################################
 if(BUILD_TESTS)
@@ -65,6 +68,8 @@ if(BUILD_TESTS)
     target_link_libraries (${_NAME} ${PROJECT_NAME})
     add_test              (${_NAME} ${_NAME})
     set_property          (TARGET ${_NAME} PROPERTY FOLDER "Tests")
+    set_property          (TARGET ${_NAME} PROPERTY CXX_STANDARD 17)
+    set_property          (TARGET ${_NAME} PROPERTY CXX_STANDARD_REQUIRED ON)
     source_group          ("source" FILES ${_SOURCES})
   endforeach()
 endif()

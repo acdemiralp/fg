@@ -1,30 +1,44 @@
 #ifndef FG_RESOURCE_HPP_
 #define FG_RESOURCE_HPP_
 
-#include <optional>
+#include <cstddef>
 
-#include <fg/resource_base.hpp>
+#include <fg/actualize.hpp>
 
 namespace fg
 {
-template <typename actual_type>
-class resource : public resource_base
+template<typename description_type, typename actual_type>
+class resource final
 {
 public:
-  resource           ()                      = default;
-  resource           (const resource&  that) = delete ;
-  resource           (      resource&& temp) = default;
-  virtual ~resource  ()                      = default;
-  resource& operator=(const resource&  that) = delete ;
-  resource& operator=(      resource&& temp) = default;
-  
-  actual_type* actual()
+  explicit resource  (const description_type& description) : description_(description)
   {
-    return actual_ ? &actual_.value() : nullptr;
+    static std::size_t id = 0;
+    id_ = id++;
+  }
+  resource           (const resource&  that) = default;
+  resource           (      resource&& temp) = default;
+  ~resource          ()                      = default;
+  resource& operator=(const resource&  that) = default;
+  resource& operator=(      resource&& temp) = default;
+
+  std::size_t                  id         () const
+  {
+    return id_;
+  }
+  const description_type&      description() const
+  {
+    return description_;
+  }
+
+  std::unique_ptr<actual_type> actualize  ()
+  {
+    return fg::actualize(description_);
   }
 
 protected:
-  std::optional<actual_type> actual_;
+  std::size_t      id_         ;
+  description_type description_;
 };
 }
 

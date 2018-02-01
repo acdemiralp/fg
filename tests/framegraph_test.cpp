@@ -8,40 +8,39 @@
 
 namespace glr
 {
-struct buffer : fg::resource<gl::buffer>
+struct buffer_description
 {
-  void actualize() override
-  {
-    actual_.emplace();
-    actual_->set_data_immutable(static_cast<GLsizeiptr>(size));
-  }
-
   std::size_t size;
 };
-
-template<GLenum target>
-struct texture : fg::resource<gl::texture<target>>
+std::unique_ptr<gl::buffer>          actualize(const buffer_description&  description)
 {
-  void actualize() override
-  {
-    auto& actual = fg::resource<gl::texture<target>>::actual_;
-    actual.emplace();
-    if      (target == GL_TEXTURE_1D) actual->set_storage(static_cast<GLsizei>(levels), format, static_cast<GLsizei>(size[0]));
-    else if (target == GL_TEXTURE_2D) actual->set_storage(static_cast<GLsizei>(levels), format, static_cast<GLsizei>(size[0]), static_cast<GLsizei>(size[1]));
-    else if (target == GL_TEXTURE_3D) actual->set_storage(static_cast<GLsizei>(levels), format, static_cast<GLsizei>(size[0]), static_cast<GLsizei>(size[1]), static_cast<GLsizei>(size[2]));
-  }
+  auto actual = std::make_unique<gl::buffer>(); 
+  actual->set_data_immutable(static_cast<GLsizeiptr>(description.size));
+  return actual;
+}
 
+struct texture_description
+{
   std::size_t                levels;
   GLenum                     format;
   std::array<std::size_t, 3> size  ;
 };
+template<GLenum target>
+std::unique_ptr<gl::texture<target>> actualize(const texture_description& description)
+{
+  auto actual = std::make_unique<gl::texture<target>>();
+  if      (target == GL_TEXTURE_1D) actual->set_storage(static_cast<GLsizei>(description.levels), description.format, static_cast<GLsizei>(description.size[0]));
+  else if (target == GL_TEXTURE_2D) actual->set_storage(static_cast<GLsizei>(description.levels), description.format, static_cast<GLsizei>(description.size[0]), static_cast<GLsizei>(description.size[1]));
+  else if (target == GL_TEXTURE_3D) actual->set_storage(static_cast<GLsizei>(description.levels), description.format, static_cast<GLsizei>(description.size[0]), static_cast<GLsizei>(description.size[1]), static_cast<GLsizei>(description.size[2]));
+  return actual;
+}
 }
 
 TEST_CASE("Framegraph test.", "[framegraph]")
 {
   fg::framegraph<
-    glr::buffer,
-    glr::texture<GL_TEXTURE_1D>,
-    glr::texture<GL_TEXTURE_2D>,
-    glr::texture<GL_TEXTURE_3D>> framegraph;
+    fg::resource<glr::buffer_description , gl::buffer    >,
+    fg::resource<glr::texture_description, gl::texture_1d>,
+    fg::resource<glr::texture_description, gl::texture_2d>,
+    fg::resource<glr::texture_description, gl::texture_3d>> framegraph;
 }

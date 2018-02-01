@@ -1,5 +1,5 @@
-#ifndef FG_REGISTRY_HPP_
-#define FG_REGISTRY_HPP_
+#ifndef FG_RESOURCE_REGISTRY_HPP_
+#define FG_RESOURCE_REGISTRY_HPP_
 
 #include <cstddef>
 #include <tuple>
@@ -9,10 +9,10 @@
 namespace fg
 {
 template<typename... types>
-class registry
+class resource_registry
 {
 public:
-  virtual ~registry() = default;
+  virtual ~resource_registry() = default;
 
   template<typename type>
   const std::vector<type>& get() const

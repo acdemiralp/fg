@@ -1,31 +1,30 @@
 #ifndef FG_RESOURCE_HPP_
 #define FG_RESOURCE_HPP_
 
-#include <cstddef>
 #include <optional>
+
+#include <fg/resource_base.hpp>
 
 namespace fg
 {
-template <typename type>
-class resource
+template <typename actual_type>
+class resource : public resource_base
 {
 public:
-  resource           ()
-  {
-    static std::size_t id = 0;
-    id_ = id++;
-  }
+  resource           ()                      = default;
   resource           (const resource&  that) = delete ;
   resource           (      resource&& temp) = default;
   virtual ~resource  ()                      = default;
   resource& operator=(const resource&  that) = delete ;
   resource& operator=(      resource&& temp) = default;
-
-  virtual void realize() = 0;
+  
+  actual_type* actual()
+  {
+    return actual_ ? &actual_.value() : nullptr;
+  }
 
 protected:
-  std::size_t         id_         ;
-  std::optional<type> realization_;
+  std::optional<actual_type> actual_;
 };
 }
 

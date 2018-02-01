@@ -3,27 +3,19 @@
 
 #include <functional>
 
+#include <fg/render_task_base.hpp>
+#include <fg/render_task_builder.hpp>
+#include <fg/render_task_resources.hpp>
+
 namespace fg
 {
-class render_task_base
-{
-public:
-  render_task_base           ()                              = default;
-  render_task_base           (const render_task_base&  that) = delete ;
-  render_task_base           (      render_task_base&& temp) = default;
-  virtual ~render_task_base  ()                              = default;
-  render_task_base& operator=(const render_task_base&  that) = delete ;
-  render_task_base& operator=(      render_task_base&& temp) = default;
-
-  virtual void setup  ()       = 0;
-  virtual void execute() const = 0;
-};
-
-template<typename type>
+template<typename data_type>
 class render_task : public render_task_base
 {
 public:
-  render_task           (const std::function<void(type&)>& setup, const std::function<void(const type&)>& execute) : setup_(setup), execute_(execute)
+  explicit render_task  (
+    const std::function<void(      data_type&,       render_task_builder  &)>& setup  ,
+    const std::function<void(const data_type&, const render_task_resources&)>& execute) : setup_(setup), execute_(execute)
   {
     
   }
@@ -32,20 +24,24 @@ public:
   virtual ~render_task  ()                         = default;
   render_task& operator=(const render_task&  that) = delete ;
   render_task& operator=(      render_task&& temp) = default;
-
-  void setup  ()       override
+  
+  const data_type& data   ()                                       const
   {
-    setup_  (data_);
+    return data_;
   }
-  void execute() const override
+  void             setup  (      render_task_builder  & builder  )       override
   {
-    execute_(data_);
+    setup_  (data_, builder  );
+  }
+  void             execute(const render_task_resources& resources) const override
+  {
+    execute_(data_, resources);
   }
 
 protected:
-  type                             data_   ;
-  std::function<void(      type&)> setup_  ;
-  std::function<void(const type&)> execute_;
+  data_type                                                                 data_   ;
+  const std::function<void(      data_type&,       render_task_builder  &)> setup_  ;
+  const std::function<void(const data_type&, const render_task_resources&)> execute_;
 };
 }
 

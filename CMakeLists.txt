@@ -18,11 +18,13 @@ set(PROJECT_SOURCES
   cmake/assign_source_group.cmake
   cmake/import_library.cmake
   
-  include/fg/builder.hpp
   include/fg/framegraph.hpp
-  include/fg/registry.hpp
   include/fg/render_task.hpp
+  include/fg/render_task_base.hpp
+  include/fg/render_task_builder.hpp
+  include/fg/render_task_resources.hpp
   include/fg/resource.hpp
+  include/fg/resource_registry.hpp
 )
 include(assign_source_group)
 assign_source_group(${PROJECT_SOURCES})

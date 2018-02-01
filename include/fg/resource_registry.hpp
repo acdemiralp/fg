@@ -8,7 +8,7 @@
 
 namespace fg
 {
-template<typename... types>
+template<typename... resource_types>
 class resource_registry
 {
 public:
@@ -17,17 +17,17 @@ public:
   template<typename type>
   const std::vector<type>& get() const
   {
-    return find<0, type, std::tuple<std::vector<types>...>, is_same<0, type>::value>::get(containers_);
+    return find<0, type, std::tuple<std::vector<resource_types>...>, is_same<0, type>::value>::get(resources_);
   }
   template<typename type>
   std::vector<type>&       get()
   {
-    return find<0, type, std::tuple<std::vector<types>...>, is_same<0, type>::value>::get(containers_);
+    return find<0, type, std::tuple<std::vector<resource_types>...>, is_same<0, type>::value>::get(resources_);
   }
   
 protected:
   template<std::size_t index, typename type>
-  struct is_same : std::is_same<type, typename std::tuple_element<index, std::tuple<std::vector<types>...>>::type::value_type>
+  struct is_same : std::is_same<type, typename std::tuple_element<index, std::tuple<std::vector<resource_types>...>>::type::value_type>
   {
     
   };
@@ -48,7 +48,7 @@ protected:
     }
   };
   
-  std::tuple<std::vector<types>...> containers_;
+  std::tuple<std::vector<resource_types>...> resources_;
 };
 }
 

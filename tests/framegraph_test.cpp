@@ -1,9 +1,10 @@
 #include "catch.hpp"
 
-#include <fg/framegraph.hpp>
-#include <fg/resource_registry.hpp>
 #include <gl/buffer.hpp>
 #include <gl/texture.hpp>
+
+#include <fg/framegraph.hpp>
+#include <fg/resource.hpp>
 
 namespace glr
 {
@@ -38,15 +39,9 @@ struct texture : fg::resource<gl::texture<target>>
 
 TEST_CASE("Framegraph test.", "[framegraph]")
 {
-  fg::resource_registry<
-    glr::buffer, 
+  fg::framegraph<
+    glr::buffer,
     glr::texture<GL_TEXTURE_1D>,
     glr::texture<GL_TEXTURE_2D>,
-    glr::texture<GL_TEXTURE_3D>> registry  ;
-  auto& buffers    = registry.get<glr::buffer>();
-  auto& texture1ds = registry.get<glr::texture<GL_TEXTURE_1D>>();
-  auto& texture2ds = registry.get<glr::texture<GL_TEXTURE_2D>>();
-  auto& texture3ds = registry.get<glr::texture<GL_TEXTURE_3D>>();
-
-  fg::framegraph framegraph;
+    glr::texture<GL_TEXTURE_3D>> framegraph;
 }

@@ -5,10 +5,11 @@
 #include <vector>
 
 #include <fg/render_task.hpp>
-#include <fg/resource.hpp>
+#include <fg/resource_registry.hpp>
 
 namespace fg
 {
+template<typename... resource_types>
 class framegraph
 {
 public:
@@ -19,29 +20,29 @@ public:
   framegraph& operator=(const framegraph&  that) = default;
   framegraph& operator=(      framegraph&& temp) = default;
 
-  template<typename type, typename... argument_types>
-  type* add_render_task   (argument_types&&... arguments  )
+  template<typename data_type, typename... argument_types>
+  render_task<data_type>* add_render_task   (argument_types&&...     arguments  )
   {
-    render_tasks_.emplace_back(std::make_unique<type>(arguments...));
-    return render_tasks_.back().get();
+    return nullptr;
   }
-  template<typename type>
-  void  remove_render_task(type*               render_task)
+  template<typename data_type>
+  void                    remove_render_task(render_task<data_type>* render_task)
   {
     
   }
 
-  void  compile           () const
+  void                    compile           ()
   {
     
   }
-  void  traverse          () const
+  void                    traverse          () const
   {
     
   }
 
 protected:
-  std::vector<std::unique_ptr<render_task_base>> render_tasks_;
+  resource_registry<resource_types...>           resource_registry_;
+  std::vector<std::unique_ptr<render_task_base>> render_tasks_     ;
 };
 }
 

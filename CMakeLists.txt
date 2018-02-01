@@ -36,6 +36,9 @@ include(import_library)
 find_package  (Boost REQUIRED)
 import_library(Boost_INCLUDE_DIRS)
 
+find_package  (gl REQUIRED)
+list          (APPEND PROJECT_LIBRARIES gl)
+
 ##################################################    Targets     ##################################################
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE 

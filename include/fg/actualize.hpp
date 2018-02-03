@@ -7,7 +7,7 @@
 namespace fg
 {
 template<typename description_type, typename actual_type>
-struct missing_actualize_implementation : std::false_type { };
+struct missing_actualize_implementation : std::false_type {};
 
 template<typename description_type, typename actual_type>
 std::unique_ptr<actual_type> actualize(const description_type& description)

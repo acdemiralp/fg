@@ -9,6 +9,7 @@
 
 namespace fg
 {
+// TODO: remove_render_task, import_resource, compile, clear.
 template<typename... resource_types>
 class framegraph
 {
@@ -23,21 +24,21 @@ public:
   template<typename data_type, typename... argument_types>
   render_task<data_type>* add_render_task   (argument_types&&...     arguments  )
   {
-    return nullptr;
-  }
-  template<typename data_type>
-  void                    remove_render_task(render_task<data_type>* render_task)
-  {
-    
-  }
+    render_tasks_.emplace_back(std::make_unique<render_task<data_type>>(arguments...));
+    auto render_task = render_tasks_.back().get();
 
-  void                    compile           ()
-  {
+    render_task_builder builder;
+    render_task->setup(builder);
     
+    return static_cast<fg::render_task<data_type>*>(render_task);
   }
   void                    traverse          () const
   {
-    
+    for(auto& render_task : render_tasks_)
+    {
+      render_task_resources resources;
+      render_task->execute(resources);
+    }
   }
 
 protected:

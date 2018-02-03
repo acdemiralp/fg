@@ -2,6 +2,7 @@
 #define FG_RESOURCE_HPP_
 
 #include <cstddef>
+#include <memory>
 
 #include <fg/actualize.hpp>
 
@@ -11,7 +12,7 @@ template<typename description_type, typename actual_type>
 class resource final
 {
 public:
-  explicit resource  (const description_type& description) : description_(description)
+  explicit resource  (const description_type& description = description_type()) : description_(description)
   {
     static std::size_t id = 0;
     id_ = id++;

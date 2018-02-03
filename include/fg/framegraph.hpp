@@ -5,6 +5,8 @@
 #include <vector>
 
 #include <fg/render_task.hpp>
+#include <fg/render_task_builder.hpp>
+#include <fg/render_task_resources.hpp>
 #include <fg/resource_registry.hpp>
 
 namespace fg

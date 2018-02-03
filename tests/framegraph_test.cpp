@@ -4,8 +4,6 @@
 #include <gl/texture.hpp>
 
 #include <fg/framegraph.hpp>
-#include <fg/render_task_builder.hpp>
-#include <fg/render_task_resources.hpp>
 #include <fg/resource.hpp>
 
 namespace glr
@@ -37,36 +35,58 @@ std::unique_ptr<gl::texture<target>> actualize(const texture_description& descri
   return actual;
 }
 
-using buffer_resource     = fg::resource<glr::buffer_description , gl::buffer    >;
-using texture_1d_resource = fg::resource<glr::texture_description, gl::texture_1d>;
-using texture_2d_resource = fg::resource<glr::texture_description, gl::texture_2d>;
-using texture_3d_resource = fg::resource<glr::texture_description, gl::texture_3d>;
+using buffer_resource     = fg::resource<buffer_description , gl::buffer    >;
+using texture_1d_resource = fg::resource<texture_description, gl::texture_1d>;
+using texture_2d_resource = fg::resource<texture_description, gl::texture_2d>;
+using texture_3d_resource = fg::resource<texture_description, gl::texture_3d>;
 }
 
 TEST_CASE("Framegraph test.", "[framegraph]")
 {
   fg::framegraph<glr::buffer_resource, glr::texture_1d_resource, glr::texture_2d_resource, glr::texture_3d_resource> framegraph;
 
-  struct render_task_data
-  {
-    glr::buffer_resource     vertex_buffer  ;
-    glr::buffer_resource     normal_buffer  ;
-    glr::buffer_resource     texcoord_buffer;
-    glr::buffer_resource     index_buffer   ;
-    glr::texture_2d_resource diffuse_texture;
-  };
+  // First render task declaration.
   
-  auto render_task = framegraph.add_render_task<render_task_data>(
-  [&] (      render_task_data& data,       fg::render_task_builder&   builder  )
+  struct render_task_1_data
   {
-    
+    glr::texture_2d_resource output;
+  };
+
+  auto render_task_1 = framegraph.add_render_task<render_task_1_data>(
+  [&] (      render_task_1_data& data,       fg::render_task_builder&   builder  )
+  {
+    // data.output = builder.create(glr::texture_description());
   },
-  [=] (const render_task_data& data, const fg::render_task_resources& resources)
+  [=] (const render_task_1_data& data, const fg::render_task_resources& resources)
   {
-    
+    // auto& actual_output = resources.get(data.output);
+    // Perform actual rendering. You may load resources from CPU by capturing them.
   });
 
-  auto& output = render_task->data();
+  auto& data_1 = render_task_1->data();
+  REQUIRE(data_1.output.id() == 0);
+  
+  // Second render pass declaration.
 
-  REQUIRE(output.vertex_buffer.id() == 0);
+  struct render_task_2_data
+  {
+    glr::texture_2d_resource input ;
+    glr::texture_2d_resource output;
+  };
+  
+  auto render_task_2 = framegraph.add_render_task<render_task_2_data>(
+  [&] (      render_task_2_data& data,       fg::render_task_builder&   builder  )
+  {
+    // data.input  = builder.read  (data_1.output);
+    // data.output = builder.create(glr::texture_description());
+  },
+  [=] (const render_task_2_data& data, const fg::render_task_resources& resources)
+  {
+    // auto& actual_input  = resources.get(data.input );
+    // auto& actual_output = resources.get(data.output);
+    // Perform actual rendering. You may load resources from CPU by capturing them.
+  });
+
+  auto& data_2 = render_task_2->data();
+  REQUIRE(data_2.output.id() == 1);
 }

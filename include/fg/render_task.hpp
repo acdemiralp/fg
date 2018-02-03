@@ -4,11 +4,12 @@
 #include <functional>
 
 #include <fg/render_task_base.hpp>
-#include <fg/render_task_builder.hpp>
-#include <fg/render_task_resources.hpp>
 
 namespace fg
 {
+class render_task_builder  ;
+class render_task_resources;
+
 template<typename data_type>
 class render_task : public render_task_base
 {

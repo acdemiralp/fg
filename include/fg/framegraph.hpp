@@ -7,12 +7,11 @@
 #include <fg/render_task.hpp>
 #include <fg/render_task_builder.hpp>
 #include <fg/render_task_resources.hpp>
-#include <fg/resource_registry.hpp>
+#include <fg/resource.hpp>
 
 namespace fg
 {
-// TODO: remove_render_task, import_resource, compile, clear.
-template<typename... resource_types>
+// TODO: remove_render_task, add_resource, remove_resource, cull.
 class framegraph
 {
 public:
@@ -29,7 +28,7 @@ public:
     render_tasks_.emplace_back(std::make_unique<render_task<data_type>>(arguments...));
     auto render_task = render_tasks_.back().get();
 
-    render_task_builder builder;
+    render_task_builder builder(*this);
     render_task->setup(builder);
     
     return static_cast<fg::render_task<data_type>*>(render_task);
@@ -38,15 +37,45 @@ public:
   {
     for(auto& render_task : render_tasks_)
     {
-      render_task_resources resources;
+      const render_task_resources resources(*this);
       render_task->execute(resources);
     }
   }
+  void                    clear             ()
+  {
+    render_tasks_.clear();
+    resources_   .clear();
+  }
 
 protected:
-  resource_registry<resource_types...>           resource_registry_;
-  std::vector<std::unique_ptr<render_task_base>> render_tasks_     ;
+  friend render_task_builder;
+  friend render_task_resources;
+  
+  std::vector<std::unique_ptr<render_task_base>> render_tasks_;
+  std::vector<std::unique_ptr<resource_base>>    resources_   ;
 };
+
+template<typename resource_type, typename description_type>
+const resource_type&                 render_task_builder::create(const description_type& description)
+{
+  
+}
+template<typename resource_type>
+const resource_type&                 render_task_builder::read  (const resource_type&    resource   )
+{
+  
+}
+template<typename resource_type>
+const resource_type&                 render_task_builder::write (const resource_type&    resource   )
+{
+  
+}
+
+template<typename resource_type>
+typename resource_type::actual_type* render_task_resources::get (const resource_type&    resource   )
+{
+  
+}
 }
 
 #endif

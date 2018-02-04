@@ -3,10 +3,12 @@
 
 namespace fg
 {
+class framegraph;
+
 class render_task_builder
 {
 public:
-  explicit render_task_builder  ()
+  explicit render_task_builder  (framegraph& framegraph) : framegraph_(framegraph)
   {
 
   }
@@ -15,6 +17,16 @@ public:
   virtual ~render_task_builder  ()                                 = default;
   render_task_builder& operator=(const render_task_builder&  that) = default;
   render_task_builder& operator=(      render_task_builder&& temp) = default;
+
+  template<typename resource_type, typename description_type>
+  const resource_type& create(const description_type& description);
+  template<typename resource_type>
+  const resource_type& read  (const resource_type&    resource   );
+  template<typename resource_type>
+  const resource_type& write (const resource_type&    resource   );
+
+protected:
+  framegraph& framegraph_;
 };
 }
 

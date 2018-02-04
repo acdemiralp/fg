@@ -43,7 +43,7 @@ using texture_3d_resource = fg::resource<texture_description, gl::texture_3d>;
 
 TEST_CASE("Framegraph test.", "[framegraph]")
 {
-  fg::framegraph<glr::buffer_resource, glr::texture_1d_resource, glr::texture_2d_resource, glr::texture_3d_resource> framegraph;
+  fg::framegraph framegraph;
 
   // First render task declaration.
   
@@ -55,11 +55,11 @@ TEST_CASE("Framegraph test.", "[framegraph]")
   auto render_task_1 = framegraph.add_render_task<render_task_1_data>(
   [&] (      render_task_1_data& data,       fg::render_task_builder&   builder  )
   {
-    // data.output = builder.create(glr::texture_description());
+    data.output = builder.create<glr::texture_2d_resource>(glr::texture_description());
   },
   [=] (const render_task_1_data& data, const fg::render_task_resources& resources)
   {
-    // auto& actual_output = resources.get(data.output);
+    // auto actual_output = resources.get(data.output);
     // Perform actual rendering. You may load resources from CPU by capturing them.
   });
 
@@ -77,13 +77,13 @@ TEST_CASE("Framegraph test.", "[framegraph]")
   auto render_task_2 = framegraph.add_render_task<render_task_2_data>(
   [&] (      render_task_2_data& data,       fg::render_task_builder&   builder  )
   {
-    // data.input  = builder.read  (data_1.output);
-    // data.output = builder.create(glr::texture_description());
+    data.input  = builder.read                            (data_1.output);
+    data.output = builder.create<glr::texture_2d_resource>(glr::texture_description());
   },
   [=] (const render_task_2_data& data, const fg::render_task_resources& resources)
   {
-    // auto& actual_input  = resources.get(data.input );
-    // auto& actual_output = resources.get(data.output);
+    // auto actual_input  = resources.get(data.input );
+    // auto actual_output = resources.get(data.output);
     // Perform actual rendering. You may load resources from CPU by capturing them.
   });
 

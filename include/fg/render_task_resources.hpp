@@ -19,7 +19,7 @@ public:
   render_task_resources& operator=(      render_task_resources&& temp) = default;
 
   template<typename resource_type>
-  typename resource_type::actual_type* get(const resource_type& resource);
+  typename resource_type::actual_type* get(const resource_type& resource) const;
 
 protected:
   const framegraph& framegraph_;

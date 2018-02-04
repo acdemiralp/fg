@@ -59,7 +59,7 @@ TEST_CASE("Framegraph test.", "[framegraph]")
   },
   [=] (const render_task_1_data& data, const fg::render_task_resources& resources)
   {
-    // auto actual_output = resources.get(data.output);
+    auto actual_output = resources.get(data.output);
     // Perform actual rendering. You may load resources from CPU by capturing them.
   });
 
@@ -82,11 +82,14 @@ TEST_CASE("Framegraph test.", "[framegraph]")
   },
   [=] (const render_task_2_data& data, const fg::render_task_resources& resources)
   {
-    // auto actual_input  = resources.get(data.input );
-    // auto actual_output = resources.get(data.output);
+    auto actual_input  = resources.get(data.input );
+    auto actual_output = resources.get(data.output);
     // Perform actual rendering. You may load resources from CPU by capturing them.
   });
 
   auto& data_2 = render_task_2->data();
   REQUIRE(data_2.output.id() == 1);
+
+  framegraph.traverse();
+  framegraph.clear   ();
 }

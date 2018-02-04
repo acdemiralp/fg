@@ -10,10 +10,12 @@ namespace fg
 class render_task_builder  ;
 class render_task_resources;
 
-template<typename data_type>
+template<typename data_type_>
 class render_task : public render_task_base
 {
 public:
+  using data_type = data_type_;
+
   explicit render_task  (
     const std::function<void(      data_type&,       render_task_builder  &)>& setup  ,
     const std::function<void(const data_type&, const render_task_resources&)>& execute) : setup_(setup), execute_(execute)

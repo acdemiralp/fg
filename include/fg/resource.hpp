@@ -8,10 +8,13 @@
 
 namespace fg
 {
-template<typename description_type, typename actual_type>
+template<typename description_type_, typename actual_type_>
 class resource : public resource_base
 {
 public:
+  using description_type = description_type_;
+  using actual_type      = actual_type_     ;
+
   explicit resource  (const description_type& description = description_type()) : resource_base(), description_(description)
   {
 

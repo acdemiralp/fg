@@ -58,23 +58,24 @@ protected:
 template<typename resource_type, typename description_type>
 const resource_type&                 render_task_builder::create(const description_type& description)
 {
-  
+  framegraph_.resources_.emplace_back(std::make_unique<resource_type>(description));
+  return static_cast<const resource_type&>(*framegraph_.resources_.back().get());
 }
 template<typename resource_type>
 const resource_type&                 render_task_builder::read  (const resource_type&    resource   )
 {
-  
+  return resource;
 }
 template<typename resource_type>
 const resource_type&                 render_task_builder::write (const resource_type&    resource   )
 {
-  
+  return resource_type();
 }
 
 template<typename resource_type>
-typename resource_type::actual_type* render_task_resources::get (const resource_type&    resource   )
+typename resource_type::actual_type* render_task_resources::get (const resource_type&    resource   ) const
 {
-  
+  return nullptr;
 }
 }
 

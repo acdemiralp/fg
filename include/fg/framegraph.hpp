@@ -28,16 +28,24 @@ public:
     render_tasks_.emplace_back(std::make_unique<render_task<data_type>>(arguments...));
     auto render_task = render_tasks_.back().get();
 
-    render_task_builder builder(*this);
+    render_task_builder builder(this);
     render_task->setup(builder);
     
     return static_cast<fg::render_task<data_type>*>(render_task);
+  }
+  void                    cull              () const
+  {
+    for(auto& render_task : render_tasks_)
+    {
+      auto& resources = render_task->resources();
+      // Increment reference counts of resources, compute creation and destruction (last read) of resources.
+    }
   }
   void                    traverse          () const
   {
     for(auto& render_task : render_tasks_)
     {
-      const render_task_resources resources(*this);
+      const render_task_resources resources(this);
       render_task->execute(resources);
     }
   }
@@ -58,8 +66,8 @@ protected:
 template<typename resource_type, typename description_type>
 const resource_type&                 render_task_builder::create(const description_type& description)
 {
-  framegraph_.resources_.emplace_back(std::make_unique<resource_type>(description));
-  return static_cast<const resource_type&>(*framegraph_.resources_.back().get());
+  framegraph_->resources_.emplace_back(std::make_unique<resource_type>(description));
+  return static_cast<const resource_type&>(*framegraph_->resources_.back().get());
 }
 template<typename resource_type>
 const resource_type&                 render_task_builder::read  (const resource_type&    resource   )

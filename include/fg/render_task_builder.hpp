@@ -8,7 +8,7 @@ class framegraph;
 class render_task_builder
 {
 public:
-  explicit render_task_builder  (framegraph& framegraph) : framegraph_(framegraph)
+  explicit render_task_builder  (framegraph* framegraph) : framegraph_(framegraph)
   {
 
   }
@@ -26,7 +26,7 @@ public:
   const resource_type& write (const resource_type&    resource   );
 
 protected:
-  framegraph& framegraph_;
+  framegraph* framegraph_;
 };
 }
 

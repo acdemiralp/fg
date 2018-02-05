@@ -8,7 +8,7 @@ class framegraph;
 class render_task_resources
 {
 public:
-  explicit render_task_resources  (const framegraph& framegraph) : framegraph_(framegraph)
+  explicit render_task_resources  (const framegraph* framegraph) : framegraph_(framegraph)
   {
 
   }
@@ -22,7 +22,7 @@ public:
   typename resource_type::actual_type* get(const resource_type& resource) const;
 
 protected:
-  const framegraph& framegraph_;
+  const framegraph* framegraph_;
 };
 }
 

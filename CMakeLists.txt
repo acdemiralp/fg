@@ -18,8 +18,8 @@ set(PROJECT_SOURCES
   cmake/assign_source_group.cmake
   cmake/import_library.cmake
   
-  include/fg/actualize.hpp
   include/fg/framegraph.hpp
+  include/fg/realize.hpp
   include/fg/render_task.hpp
   include/fg/render_task_base.hpp
   include/fg/render_task_builder.hpp

@@ -51,16 +51,16 @@ TEST_CASE("Framegraph test.", "[framegraph]")
   {
     glr::texture_2d_resource* output;
   };
-
-  auto render_task_1 = framegraph.add_render_task<render_task_1_data>("Render Task 1",
-  [&] (      render_task_1_data& data,       fg::render_task_builder&   builder  )
-  {
-    data.output = builder.create<glr::texture_2d_resource>("Resource 1", glr::texture_description());
-  },
-  [=] (const render_task_1_data& data)
-  {
-    // Perform actual rendering. You may load resources from CPU by capturing them.
-  });
+  auto render_task_1 = framegraph.add_render_task<render_task_1_data>(
+    "Render Task 1",
+    [&] (render_task_1_data& data, fg::render_task_builder& builder)
+    {
+      data.output = builder.create<glr::texture_2d_resource>("Resource 1", glr::texture_description());
+    },
+    [=] (const render_task_1_data& data)
+    {
+      // Perform actual rendering. You may load resources from CPU by capturing them.
+    });
 
   auto& data_1 = render_task_1->data();
   REQUIRE(data_1.output->id() == 0);
@@ -71,17 +71,17 @@ TEST_CASE("Framegraph test.", "[framegraph]")
     glr::texture_2d_resource* input ;
     glr::texture_2d_resource* output;
   };
-  
-  auto render_task_2 = framegraph.add_render_task<render_task_2_data>("Render Task 2",
-  [&] (      render_task_2_data& data,       fg::render_task_builder&   builder  )
-  {
-    data.input  = builder.read                            (data_1.output);
-    data.output = builder.create<glr::texture_2d_resource>("Resource 2", glr::texture_description());
-  },
-  [=] (const render_task_2_data& data)
-  {
-    // Perform actual rendering. You may load resources from CPU by capturing them.
-  });
+  auto render_task_2 = framegraph.add_render_task<render_task_2_data>(
+    "Render Task 2",
+    [&] (render_task_2_data& data, fg::render_task_builder& builder)
+    {
+      data.input  = builder.read                            (data_1.output);
+      data.output = builder.create<glr::texture_2d_resource>("Resource 2", glr::texture_description());
+    },
+    [=] (const render_task_2_data& data)
+    {
+      // Perform actual rendering. You may load resources from CPU by capturing them.
+    });
 
   auto& data_2 = render_task_2->data();
   REQUIRE(data_2.output->id() == 1);

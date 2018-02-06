@@ -1,6 +1,8 @@
 #ifndef FG_RENDER_TASK_BUILDER_HPP_
 #define FG_RENDER_TASK_BUILDER_HPP_
 
+#include <string>
+
 namespace fg
 {
 class framegraph;
@@ -19,11 +21,11 @@ public:
   render_task_builder& operator=(      render_task_builder&& temp) = default;
 
   template<typename resource_type, typename description_type>
-  const resource_type* create(const description_type& description);
+  resource_type* create(const std::string& name, const description_type& description);
   template<typename resource_type>
-  const resource_type* read  (const resource_type*    resource   );
+  resource_type* read  (const resource_type* resource);
   template<typename resource_type>
-  const resource_type* write (const resource_type*    resource   );
+  resource_type* write (const resource_type* resource);
 
 protected:
   framegraph* framegraph_;

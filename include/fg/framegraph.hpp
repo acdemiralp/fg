@@ -61,20 +61,20 @@ protected:
 };
 
 template<typename resource_type, typename description_type>
-const resource_type*                 render_task_builder::create(const description_type& description)
+resource_type*                 render_task_builder::create(const std::string& name, const description_type& description)
 {
-  framegraph_->resources_.emplace_back(std::make_unique<resource_type>(description));
-  return static_cast<const resource_type&>(*framegraph_->resources_.back().get());
+  framegraph_->resources_.emplace_back(std::make_unique<resource_type>(name, description));
+  return static_cast<resource_type*>(framegraph_->resources_.back().get());
 }
 template<typename resource_type>
-const resource_type*                 render_task_builder::read  (const resource_type*    resource   )
+resource_type*                 render_task_builder::read  (const resource_type*    resource   )
 {
-  return resource;
+  return const_cast<resource_type*>(resource);
 }
 template<typename resource_type>
-const resource_type*                 render_task_builder::write (const resource_type*    resource   )
+resource_type*                 render_task_builder::write (const resource_type*    resource   )
 {
-  return resource_type();
+  return const_cast<resource_type*>(resource);
 }
 }
 

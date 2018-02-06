@@ -20,10 +20,10 @@ public:
   {
 
   }
-  resource           (const resource&  that) = default;
+  resource           (const resource&  that) = delete ;
   resource           (      resource&& temp) = default;
   ~resource          ()                      = default;
-  resource& operator=(const resource&  that) = default;
+  resource& operator=(const resource&  that) = delete ;
   resource& operator=(      resource&& temp) = default;
 
   const description_type& description() const
@@ -38,7 +38,7 @@ public:
 protected:
   void realize  () override
   {
-    actual_.reset(fg::realize(description_));
+    actual_ = fg::realize<description_type, actual_type>(description_);
   }
   void derealize() override
   {

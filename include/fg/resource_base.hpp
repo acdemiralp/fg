@@ -16,10 +16,10 @@ public:
     static std::size_t id = 0;
     id_ = id++;
   }
-  resource_base           (const resource_base&  that) = default;
+  resource_base           (const resource_base&  that) = delete ;
   resource_base           (      resource_base&& temp) = default;
   virtual ~resource_base  ()                           = default;
-  resource_base& operator=(const resource_base&  that) = default;
+  resource_base& operator=(const resource_base&  that) = delete ;
   resource_base& operator=(      resource_base&& temp) = default;
   
   std::size_t        id      () const

@@ -6,12 +6,11 @@
 
 #include <fg/render_task.hpp>
 #include <fg/render_task_builder.hpp>
-#include <fg/render_task_resources.hpp>
 #include <fg/resource.hpp>
 
 namespace fg
 {
-// TODO: remove_render_task, add_resource, remove_resource, cull.
+// TODO: Finish compile, traverse. Implement remove_render_task, add_resource, remove_resource.
 class framegraph
 {
 public:
@@ -33,7 +32,7 @@ public:
     
     return static_cast<fg::render_task<data_type>*>(render_task);
   }
-  void                    cull              () const
+  void                    compile           () const
   {
     for(auto& render_task : render_tasks_)
     {
@@ -44,8 +43,8 @@ public:
   {
     for(auto& render_task : render_tasks_)
     {
-      const render_task_resources resources(this);
-      render_task->execute(resources);
+      // Realize resources based on their computed lifetimes.
+      render_task->execute();
     }
   }
   void                    clear             ()
@@ -56,7 +55,6 @@ public:
 
 protected:
   friend render_task_builder;
-  friend render_task_resources;
   
   std::vector<std::unique_ptr<render_task_base>> render_tasks_;
   std::vector<std::unique_ptr<resource_base>>    resources_   ;

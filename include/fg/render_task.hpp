@@ -8,8 +8,7 @@
 
 namespace fg
 {
-class render_task_builder  ;
-class render_task_resources;
+class render_task_builder;
 
 template<typename data_type_>
 class render_task : public render_task_base
@@ -18,9 +17,9 @@ public:
   using data_type = data_type_;
 
   explicit render_task  (
-    const std::string&                                                         name   ,
-    const std::function<void(      data_type&,       render_task_builder  &)>& setup  ,
-    const std::function<void(const data_type&, const render_task_resources&)>& execute) : render_task_base(name), setup_(setup), execute_(execute)
+    const std::string&                                                 name   ,
+    const std::function<void(      data_type&, render_task_builder&)>& setup  ,
+    const std::function<void(const data_type&)>&                       execute) : render_task_base(name), setup_(setup), execute_(execute)
   {
     
   }
@@ -36,18 +35,18 @@ public:
   }
   
 protected:
-  void setup  (      render_task_builder  & builder  )       override
+  void setup  (render_task_builder& builder)       override
   {
-    setup_  (data_, builder  );
+    setup_  (data_, builder);
   }
-  void execute(const render_task_resources& resources) const override
+  void execute()                             const override
   {
-    execute_(data_, resources);
+    execute_(data_);
   }
 
-  data_type                                                                 data_   ;
-  const std::function<void(      data_type&,       render_task_builder  &)> setup_  ;
-  const std::function<void(const data_type&, const render_task_resources&)> execute_;
+  data_type                                                         data_   ;
+  const std::function<void(      data_type&, render_task_builder&)> setup_  ;
+  const std::function<void(const data_type&)>                       execute_;
 };
 }
 

@@ -7,7 +7,6 @@ namespace fg
 {
 class framegraph;
 class render_task_builder;
-class render_task_resources;
 
 class render_task_base
 {
@@ -34,10 +33,9 @@ public:
 protected:
   friend framegraph;
   friend render_task_builder;
-  friend render_task_resources;
-  
-  virtual void setup  (      render_task_builder  & builder  )       = 0;
-  virtual void execute(const render_task_resources& resources) const = 0;
+
+  virtual void setup  (render_task_builder& builder)       = 0;
+  virtual void execute()                             const = 0;
 
   std::string name_;
 };

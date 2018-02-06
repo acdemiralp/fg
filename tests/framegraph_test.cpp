@@ -56,7 +56,7 @@ TEST_CASE("Framegraph test.", "[framegraph]")
   {
     data.output = builder.create<glr::texture_2d_resource>(glr::texture_description());
   },
-  [=] (const render_task_1_data& data, const fg::render_task_resources& resources)
+  [=] (const render_task_1_data& data)
   {
     // Perform actual rendering. You may load resources from CPU by capturing them.
   });
@@ -77,7 +77,7 @@ TEST_CASE("Framegraph test.", "[framegraph]")
     data.input  = builder.read                            (data_1.output);
     data.output = builder.create<glr::texture_2d_resource>(glr::texture_description());
   },
-  [=] (const render_task_2_data& data, const fg::render_task_resources& resources)
+  [=] (const render_task_2_data& data)
   {
     // Perform actual rendering. You may load resources from CPU by capturing them.
   });

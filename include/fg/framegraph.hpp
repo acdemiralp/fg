@@ -79,12 +79,6 @@ const resource_type&                 render_task_builder::write (const resource_
 {
   return resource_type();
 }
-
-template<typename resource_type>
-typename resource_type::actual_type* render_task_resources::get (const resource_type&    resource   ) const
-{
-  return nullptr;
-}
 }
 
 #endif

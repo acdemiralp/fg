@@ -23,7 +23,6 @@ set(PROJECT_SOURCES
   include/fg/render_task.hpp
   include/fg/render_task_base.hpp
   include/fg/render_task_builder.hpp
-  include/fg/render_task_resources.hpp
   include/fg/resource.hpp
   include/fg/resource_base.hpp
 )

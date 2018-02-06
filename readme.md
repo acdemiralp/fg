@@ -9,14 +9,12 @@ Definitions:
 
 - What is a resource?
   - An encapsulation of data created, modified or used by a render task.
-
   - What is a virtual resource?
     - A resource which has not yet been instantiated but contains all information necessary to do so.
     - Consists of an ID, a name (optional), a type and a description.
   - What is a real resource?
     - A resource which has been instantiated (either from its virtual representation or through external means).
     - Example: An OpenGL buffer.
-
   - What is a transient resource?
   	- A resource created, realized, managed and unrealized by the framegraph.
   - What is a retained resource?

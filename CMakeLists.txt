@@ -25,6 +25,9 @@ set(PROJECT_SOURCES
   include/fg/render_task_builder.hpp
   include/fg/resource.hpp
   include/fg/resource_base.hpp
+
+  license.txt
+  readme.md
 )
 include(assign_source_group)
 assign_source_group(${PROJECT_SOURCES})

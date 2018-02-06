@@ -2,8 +2,9 @@
 #define FG_RESOURCE_HPP_
 
 #include <memory>
+#include <string>
 
-#include <fg/actualize.hpp>
+#include <fg/realize.hpp>
 #include <fg/resource_base.hpp>
 
 namespace fg
@@ -15,7 +16,7 @@ public:
   using description_type = description_type_;
   using actual_type      = actual_type_     ;
 
-  explicit resource  (const description_type& description = description_type()) : resource_base(), description_(description)
+  explicit resource  (const std::string& name = "", const description_type& description = description_type()) : resource_base(name), description_(description)
   {
 
   }
@@ -25,17 +26,27 @@ public:
   resource& operator=(const resource&  that) = default;
   resource& operator=(      resource&& temp) = default;
 
-  const description_type&      description() const
+  const description_type& description() const
   {
     return description_;
   }
-  std::unique_ptr<actual_type> actualize  ()
+  actual_type*            actual     () const
   {
-    return fg::actualize(description_);
+    return actual_.get();
   }
 
 protected:
-  description_type description_;
+  void realize  () override
+  {
+    actual_.reset(fg::realize(description_));
+  }
+  void derealize() override
+  {
+    actual_.reset();
+  }
+
+  description_type             description_;
+  std::unique_ptr<actual_type> actual_     ;
 };
 }
 

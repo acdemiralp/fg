@@ -1,30 +1,45 @@
 #ifndef FG_RENDER_TASK_BASE_HPP_
 #define FG_RENDER_TASK_BASE_HPP_
 
+#include <string>
+
 namespace fg
 {
+class framegraph;
 class render_task_builder;
 class render_task_resources;
-class resource_base;
 
 class render_task_base
 {
 public:
-  virtual ~render_task_base() = default;
-
-  virtual void                       setup    (      render_task_builder  & builder  )       = 0;
-  virtual void                       execute  (const render_task_resources& resources) const = 0;
-
-  const std::vector<resource_base*>& resources()                                       const
+  explicit render_task_base  (const std::string& name = "") : name_(name)
   {
-    return resources_;
+    
   }
+  render_task_base           (const render_task_base&  that) = default;
+  render_task_base           (      render_task_base&& temp) = default;
+  virtual ~render_task_base  ()                              = default;
+  render_task_base& operator=(const render_task_base&  that) = default;
+  render_task_base& operator=(      render_task_base&& temp) = default;
 
+  const std::string& name    () const
+  {
+    return name_;
+  }
+  void               set_name(const std::string& name)
+  {
+    name_ = name;
+  }
+  
 protected:
+  friend framegraph;
   friend render_task_builder;
   friend render_task_resources;
+  
+  virtual void setup  (      render_task_builder  & builder  )       = 0;
+  virtual void execute(const render_task_resources& resources) const = 0;
 
-  std::vector<resource_base*> resources_;
+  std::string name_;
 };
 }
 

@@ -37,7 +37,6 @@ public:
   {
     for(auto& render_task : render_tasks_)
     {
-      auto& resources = render_task->resources();
       // Increment reference counts of resources, compute creation and destruction (last read) of resources.
     }
   }
@@ -64,18 +63,18 @@ protected:
 };
 
 template<typename resource_type, typename description_type>
-const resource_type&                 render_task_builder::create(const description_type& description)
+const resource_type*                 render_task_builder::create(const description_type& description)
 {
   framegraph_->resources_.emplace_back(std::make_unique<resource_type>(description));
   return static_cast<const resource_type&>(*framegraph_->resources_.back().get());
 }
 template<typename resource_type>
-const resource_type&                 render_task_builder::read  (const resource_type&    resource   )
+const resource_type*                 render_task_builder::read  (const resource_type*    resource   )
 {
   return resource;
 }
 template<typename resource_type>
-const resource_type&                 render_task_builder::write (const resource_type&    resource   )
+const resource_type*                 render_task_builder::write (const resource_type*    resource   )
 {
   return resource_type();
 }

@@ -2,6 +2,7 @@
 #define FG_RENDER_TASK_HPP_
 
 #include <functional>
+#include <string>
 
 #include <fg/render_task_base.hpp>
 
@@ -17,8 +18,9 @@ public:
   using data_type = data_type_;
 
   explicit render_task  (
+    const std::string&                                                         name   ,
     const std::function<void(      data_type&,       render_task_builder  &)>& setup  ,
-    const std::function<void(const data_type&, const render_task_resources&)>& execute) : setup_(setup), execute_(execute)
+    const std::function<void(const data_type&, const render_task_resources&)>& execute) : render_task_base(name), setup_(setup), execute_(execute)
   {
     
   }
@@ -28,20 +30,21 @@ public:
   render_task& operator=(const render_task&  that) = delete ;
   render_task& operator=(      render_task&& temp) = default;
   
-  const data_type& data   ()                                       const
+  const data_type& data() const
   {
     return data_;
   }
-  void             setup  (      render_task_builder  & builder  )       override
+  
+protected:
+  void setup  (      render_task_builder  & builder  )       override
   {
     setup_  (data_, builder  );
   }
-  void             execute(const render_task_resources& resources) const override
+  void execute(const render_task_resources& resources) const override
   {
     execute_(data_, resources);
   }
 
-protected:
   data_type                                                                 data_   ;
   const std::function<void(      data_type&,       render_task_builder  &)> setup_  ;
   const std::function<void(const data_type&, const render_task_resources&)> execute_;

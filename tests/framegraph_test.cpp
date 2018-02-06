@@ -46,10 +46,9 @@ TEST_CASE("Framegraph test.", "[framegraph]")
   fg::framegraph framegraph;
 
   // First render task declaration.
-  
   struct render_task_1_data
   {
-    glr::texture_2d_resource output;
+    glr::texture_2d_resource* output;
   };
 
   auto render_task_1 = framegraph.add_render_task<render_task_1_data>(
@@ -59,19 +58,17 @@ TEST_CASE("Framegraph test.", "[framegraph]")
   },
   [=] (const render_task_1_data& data, const fg::render_task_resources& resources)
   {
-    auto actual_output = resources.get(data.output);
     // Perform actual rendering. You may load resources from CPU by capturing them.
   });
 
   auto& data_1 = render_task_1->data();
-  REQUIRE(data_1.output.id() == 0);
+  REQUIRE(data_1.output->id() == 0);
   
   // Second render pass declaration.
-
   struct render_task_2_data
   {
-    glr::texture_2d_resource input ;
-    glr::texture_2d_resource output;
+    glr::texture_2d_resource* input ;
+    glr::texture_2d_resource* output;
   };
   
   auto render_task_2 = framegraph.add_render_task<render_task_2_data>(
@@ -82,13 +79,11 @@ TEST_CASE("Framegraph test.", "[framegraph]")
   },
   [=] (const render_task_2_data& data, const fg::render_task_resources& resources)
   {
-    auto actual_input  = resources.get(data.input );
-    auto actual_output = resources.get(data.output);
     // Perform actual rendering. You may load resources from CPU by capturing them.
   });
 
   auto& data_2 = render_task_2->data();
-  REQUIRE(data_2.output.id() == 1);
+  REQUIRE(data_2.output->id() == 1);
 
   framegraph.traverse();
   framegraph.clear   ();

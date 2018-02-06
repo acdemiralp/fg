@@ -19,11 +19,11 @@ public:
   render_task_builder& operator=(      render_task_builder&& temp) = default;
 
   template<typename resource_type, typename description_type>
-  const resource_type& create(const description_type& description);
+  const resource_type* create(const description_type& description);
   template<typename resource_type>
-  const resource_type& read  (const resource_type&    resource   );
+  const resource_type* read  (const resource_type*    resource   );
   template<typename resource_type>
-  const resource_type& write (const resource_type&    resource   );
+  const resource_type* write (const resource_type*    resource   );
 
 protected:
   framegraph* framegraph_;

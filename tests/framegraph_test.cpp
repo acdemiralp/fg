@@ -88,7 +88,8 @@ TEST_CASE("Framegraph test.", "[framegraph]")
   auto& data_2 = render_task_2->data();
   REQUIRE(data_2.output->id() == 1);
 
-  framegraph.compile ();
-  framegraph.traverse();
-  framegraph.clear   ();
+  framegraph.compile();
+  for(auto i = 0; i < 100; i++)
+    framegraph.traverse();
+  framegraph.clear  ();
 }

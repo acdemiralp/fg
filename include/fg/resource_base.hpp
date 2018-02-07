@@ -3,15 +3,18 @@
 
 #include <cstddef>
 #include <string>
+#include <vector>
 
 namespace fg
 {
 class framegraph;
+class render_task_base;
+class render_task_builder;
 
 class resource_base
 {
 public:
-  explicit resource_base  (const std::string& name = "") : name_(name)
+  explicit resource_base  (const std::string& name, const render_task_base* creator) : name_(name), creator_(creator)
   {
     static std::size_t id = 0;
     id_ = id++;
@@ -38,12 +41,16 @@ public:
   
 protected:
   friend framegraph;
-  
+  friend render_task_builder;
+
   virtual void realize  () = 0;
   virtual void derealize() = 0;
 
-  std::size_t id_  ;
-  std::string name_;
+  std::size_t                          id_     ;
+  std::string                          name_   ;
+  const render_task_base*              creator_;
+  std::vector<const render_task_base*> readers_;
+  std::vector<const render_task_base*> writers_;
 };
 }
 

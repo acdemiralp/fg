@@ -6,11 +6,13 @@
 namespace fg
 {
 class framegraph;
+class render_task_base;
 
+// The interface between the framegraph and a render task.
 class render_task_builder
 {
 public:
-  explicit render_task_builder  (framegraph* framegraph) : framegraph_(framegraph)
+  explicit render_task_builder  (framegraph* framegraph, render_task_base* render_task) : framegraph_(framegraph), render_task_(render_task)
   {
 
   }
@@ -23,12 +25,13 @@ public:
   template<typename resource_type, typename description_type>
   resource_type* create(const std::string& name, const description_type& description);
   template<typename resource_type>
-  resource_type* read  (const resource_type* resource);
+  resource_type* read  (resource_type* resource);
   template<typename resource_type>
-  resource_type* write (const resource_type* resource);
+  resource_type* write (resource_type* resource);
 
 protected:
-  framegraph* framegraph_;
+  framegraph*       framegraph_ ;
+  render_task_base* render_task_;
 };
 }
 

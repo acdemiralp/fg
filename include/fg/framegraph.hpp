@@ -10,7 +10,7 @@
 
 namespace fg
 {
-// TODO: Finish compile, traverse. Implement remove_render_task, add_resource, remove_resource.
+// TODO: Finish compile, traverse. Implement import_resource.
 class framegraph
 {
 public:
@@ -27,7 +27,7 @@ public:
     render_tasks_.emplace_back(std::make_unique<render_task<data_type>>(arguments...));
     auto render_task = render_tasks_.back().get();
 
-    render_task_builder builder(this);
+    render_task_builder builder(this, render_task);
     render_task->setup(builder);
     
     return static_cast<fg::render_task<data_type>*>(render_task);
@@ -61,20 +61,26 @@ protected:
 };
 
 template<typename resource_type, typename description_type>
-resource_type*                 render_task_builder::create(const std::string& name, const description_type& description)
+resource_type* render_task_builder::create(const std::string& name, const description_type& description)
 {
-  framegraph_->resources_.emplace_back(std::make_unique<resource_type>(name, description));
-  return static_cast<resource_type*>(framegraph_->resources_.back().get());
+  framegraph_->resources_.emplace_back(std::make_unique<resource_type>(name, render_task_, description));
+  const auto resource = framegraph_->resources_.back().get();
+  render_task_->creates_.push_back(resource);
+  return static_cast<resource_type*>(resource);
 }
 template<typename resource_type>
-resource_type*                 render_task_builder::read  (const resource_type*    resource   )
+resource_type* render_task_builder::read  (resource_type* resource)
 {
-  return const_cast<resource_type*>(resource);
+  resource->readers_.push_back(render_task_);
+  render_task_->reads_.push_back(resource);
+  return resource;
 }
 template<typename resource_type>
-resource_type*                 render_task_builder::write (const resource_type*    resource   )
+resource_type* render_task_builder::write (resource_type* resource)
 {
-  return const_cast<resource_type*>(resource);
+  resource->writers_.push_back(render_task_);
+  render_task_->writes_.push_back(resource);
+  return resource;
 }
 }
 

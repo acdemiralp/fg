@@ -9,6 +9,8 @@
 
 namespace fg
 {
+class render_task_base;
+
 template<typename description_type_, typename actual_type_>
 class resource : public resource_base
 {
@@ -16,7 +18,7 @@ public:
   using description_type = description_type_;
   using actual_type      = actual_type_     ;
 
-  explicit resource  (const std::string& name = "", const description_type& description = description_type()) : resource_base(name), description_(description)
+  explicit resource  (const std::string& name, const render_task_base* creator, const description_type& description) : resource_base(name, creator), description_(description)
   {
 
   }

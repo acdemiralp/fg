@@ -17,7 +17,7 @@ struct texture_description
   GLenum                     format;
   std::array<std::size_t, 3> size  ;
 };
-  
+
 using buffer_resource     = fg::resource<buffer_description , gl::buffer    >;
 using texture_1d_resource = fg::resource<texture_description, gl::texture_1d>;
 using texture_2d_resource = fg::resource<texture_description, gl::texture_2d>;

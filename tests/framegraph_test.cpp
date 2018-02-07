@@ -60,6 +60,7 @@ TEST_CASE("Framegraph test.", "[framegraph]")
     [=] (const render_task_1_data& data)
     {
       // Perform actual rendering. You may load resources from CPU by capturing them.
+      // data.output->actual()->bind();
     });
 
   auto& data_1 = render_task_1->data();
@@ -81,11 +82,13 @@ TEST_CASE("Framegraph test.", "[framegraph]")
     [=] (const render_task_2_data& data)
     {
       // Perform actual rendering. You may load resources from CPU by capturing them.
+      // data.input->actual()->bind();
     });
 
   auto& data_2 = render_task_2->data();
   REQUIRE(data_2.output->id() == 1);
 
+  framegraph.compile ();
   framegraph.traverse();
   framegraph.clear   ();
 }

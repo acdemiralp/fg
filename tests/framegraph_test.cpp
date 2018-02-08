@@ -46,6 +46,8 @@ TEST_CASE("Framegraph test.", "[framegraph]")
 {
   fg::framegraph framegraph;
 
+  framegraph.add_retained_resource<glr::texture_description, gl::texture_2d>("Retained Resource 1", glr::texture_description(), nullptr);
+
   // First render task declaration.
   struct render_task_1_data
   {
@@ -64,7 +66,7 @@ TEST_CASE("Framegraph test.", "[framegraph]")
     });
 
   auto& data_1 = render_task_1->data();
-  REQUIRE(data_1.output->id() == 0);
+  REQUIRE(data_1.output->id() == 1);
   
   // Second render pass declaration.
   struct render_task_2_data
@@ -86,13 +88,11 @@ TEST_CASE("Framegraph test.", "[framegraph]")
     });
 
   auto& data_2 = render_task_2->data();
-  REQUIRE(data_2.output->id() == 1);
+  REQUIRE(data_2.output->id() == 2);
   
-  framegraph.add_retained_resource<glr::texture_description, gl::texture_2d>("Retained Resource 1", glr::texture_description(), nullptr);
-
-  framegraph.compile();
+  framegraph.compile        ();
   for(auto i = 0; i < 100; i++)
-    framegraph.execute();
+    framegraph.execute      ();
   framegraph.export_graphviz("framegraph.gv");
-  framegraph.clear  ();
+  framegraph.clear          ();
 }

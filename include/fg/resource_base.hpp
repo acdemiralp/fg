@@ -56,7 +56,7 @@ protected:
   const render_task_base*              creator_  ;
   std::vector<const render_task_base*> readers_  ;
   std::vector<const render_task_base*> writers_  ;
-  std::size_t                          ref_count_;
+  std::size_t                          ref_count_; // Computed through framegraph compilation.
 };
 }
 

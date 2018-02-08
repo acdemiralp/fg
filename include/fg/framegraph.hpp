@@ -160,7 +160,7 @@ protected:
   
   std::vector<std::unique_ptr<render_task_base>> render_tasks_;
   std::vector<std::unique_ptr<resource_base>>    resources_   ;
-  std::vector<step>                              timeline_    ; // Computed during compilation.
+  std::vector<step>                              timeline_    ; // Computed through framegraph compilation.
 };
 
 template<typename resource_type, typename description_type>

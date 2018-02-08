@@ -54,7 +54,7 @@ protected:
   std::vector<const resource_base*> creates_      ;
   std::vector<const resource_base*> reads_        ;
   std::vector<const resource_base*> writes_       ;
-  std::size_t                       ref_count_    ;
+  std::size_t                       ref_count_    ; // Computed through framegraph compilation.
 };
 }
 

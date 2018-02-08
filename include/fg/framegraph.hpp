@@ -73,6 +73,7 @@ public:
   {
     std::ofstream stream(filepath);
     stream << "digraph framegraph {\n";
+    stream << "\trankdir = LR\n";
     stream << "\tnode [shape=rectangle]\n";
     for (auto& render_task : render_tasks_)
       stream << "\t\"" << render_task->name() << "\" [color=orange, fontcolor=orange]\n";

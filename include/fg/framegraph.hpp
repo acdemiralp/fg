@@ -76,26 +76,41 @@ public:
   void                                     export_graphviz      (const std::string& filepath)
   {
     std::ofstream stream(filepath);
-    stream << "digraph framegraph {\n";
-    stream << "\trankdir = LR\n";
-    stream << "\tnode [shape=rectangle]\n";
+    stream << "digraph framegraph \n{\n";
+
+    stream << "rankdir = LR\n\n";
+    stream << "node [shape=rectangle, fontname=\"helvetica\", fontsize=12]\n\n";
+
     for (auto& render_task : render_tasks_)
-      stream << "\t\"" << render_task->name() << "\" [color=orange, fontcolor=orange]\n";
+      stream << "\"" << render_task->name() << "\" [label=\"" << render_task->name() << "\", style=filled, fillcolor=orange]\n";
+    stream << "\n";
+
     for (auto& resource    : resources_   )
-      stream << "\t\"" << resource   ->name() << "\" " << (resource->is_transient() ? "[color=blue, fontcolor=blue]" : "[color=navy, fontcolor=navy]") << "\n";
+      stream << "\"" << resource   ->name() << "\" [label=\"" << resource   ->name() + "\\nID: " << resource->id() << "\", style=filled, fillcolor= " << (resource->is_transient() ? "skyblue" : "steelblue") << "]\n";
+    stream << "\n";
+    
     for (auto& render_task : render_tasks_)
     {
+      stream << "\"" << render_task->name() << "\" -> { ";
       for (auto& resource : render_task->creates_)
-        stream << "\t\"" << render_task->name()    << "\" -> \"" << resource   ->name() << "\" [color=green]\n";
-      for (auto& resource : render_task->reads_  )
-        stream << "\t\"" << resource   ->name   () << "\" -> \"" << render_task->name() << "\" [color=red]\n";
-      for (auto& resource : render_task->writes_ )
-      {
-        stream << "\t\"" << render_task->name()    << "\" -> \"" << resource   ->name() << "\" [color=yellow]\n";
-        stream << "\t\"" << resource   ->name()    << "\" -> \"" << render_task->name() << "\" [color=yellow]\n";
-      }
+        stream << "\"" << resource->name() << "\" ";
+      stream << "} [color=seagreen]\n";
+
+      stream << "\"" << render_task->name() << "\" -> { ";
+      for (auto& resource : render_task->writes_)
+        stream << "\"" << resource->name() << "\" ";
+      stream << "} [color=gold]\n";
     }
-    stream << "}\n";
+    stream << "\n";
+
+    for (auto& resource : resources_)
+    {
+      stream << "\"" << resource->name() << "\" -> { ";
+      for (auto& render_task : resource->readers_)
+        stream << "\"" << render_task->name() << "\" ";
+      stream << "} [color=firebrick]\n";
+    }
+    stream << "}";
   }
 
 protected:

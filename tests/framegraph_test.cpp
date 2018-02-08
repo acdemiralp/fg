@@ -46,18 +46,24 @@ TEST_CASE("Framegraph test.", "[framegraph]")
 {
   fg::framegraph framegraph;
 
-  framegraph.add_retained_resource<glr::texture_description, gl::texture_2d>("Retained Resource 1", glr::texture_description(), nullptr);
+  auto retained_resource = framegraph.add_retained_resource<glr::texture_description, gl::texture_2d>("Retained Resource 1", glr::texture_description(), nullptr);
 
   // First render task declaration.
   struct render_task_1_data
   {
-    glr::texture_2d_resource* output;
+    glr::texture_2d_resource* output1;
+    glr::texture_2d_resource* output2;
+    glr::texture_2d_resource* output3;
+    glr::texture_2d_resource* output4;
   };
   auto render_task_1 = framegraph.add_render_task<render_task_1_data>(
     "Render Task 1",
     [&] (render_task_1_data& data, fg::render_task_builder& builder)
     {
-      data.output = builder.create<glr::texture_2d_resource>("Resource 1", glr::texture_description());
+      data.output1 = builder.create<glr::texture_2d_resource>("Resource 1", glr::texture_description());
+      data.output2 = builder.create<glr::texture_2d_resource>("Resource 2", glr::texture_description());
+      data.output3 = builder.create<glr::texture_2d_resource>("Resource 3", glr::texture_description());
+      data.output4 = builder.write <glr::texture_2d_resource>(retained_resource);
     },
     [=] (const render_task_1_data& data)
     {
@@ -66,7 +72,9 @@ TEST_CASE("Framegraph test.", "[framegraph]")
     });
 
   auto& data_1 = render_task_1->data();
-  REQUIRE(data_1.output->id() == 1);
+  REQUIRE(data_1.output1->id() == 1);
+  REQUIRE(data_1.output2->id() == 2);
+  REQUIRE(data_1.output3->id() == 3);
   
   // Second render pass declaration.
   struct render_task_2_data
@@ -78,8 +86,10 @@ TEST_CASE("Framegraph test.", "[framegraph]")
     "Render Task 2",
     [&] (render_task_2_data& data, fg::render_task_builder& builder)
     {
-      data.input  = builder.read                            (data_1.output);
-      data.output = builder.create<glr::texture_2d_resource>("Resource 2", glr::texture_description());
+      data.input  = builder.read                            (data_1.output1);
+      data.input  = builder.read                            (data_1.output2);
+      data.input  = builder.write                           (data_1.output3);
+      data.output = builder.create<glr::texture_2d_resource>("Resource 4", glr::texture_description());
     },
     [=] (const render_task_2_data& data)
     {
@@ -88,7 +98,7 @@ TEST_CASE("Framegraph test.", "[framegraph]")
     });
 
   auto& data_2 = render_task_2->data();
-  REQUIRE(data_2.output->id() == 2);
+  REQUIRE(data_2.output->id() == 4);
   
   framegraph.compile        ();
   for(auto i = 0; i < 100; i++)

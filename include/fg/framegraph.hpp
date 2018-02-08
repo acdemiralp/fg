@@ -78,11 +78,12 @@ public:
     std::ofstream stream(filepath);
     stream << "digraph framegraph \n{\n";
 
-    stream << "rankdir = LR\n\n";
+    stream << "rankdir = LR\n";
+    stream << "bgcolor = black\n\n";
     stream << "node [shape=rectangle, fontname=\"helvetica\", fontsize=12]\n\n";
 
     for (auto& render_task : render_tasks_)
-      stream << "\"" << render_task->name() << "\" [label=\"" << render_task->name() << "\", style=filled, fillcolor=orange]\n";
+      stream << "\"" << render_task->name() << "\" [label=\"" << render_task->name() << "\", style=filled, fillcolor=darkorange]\n";
     stream << "\n";
 
     for (auto& resource    : resources_   )

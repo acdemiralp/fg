@@ -35,9 +35,6 @@ assign_source_group(${PROJECT_SOURCES})
 ##################################################  Dependencies  ##################################################
 include(import_library)
 
-find_package  (Boost REQUIRED)
-import_library(Boost_INCLUDE_DIRS)
-
 find_package  (gl REQUIRED)
 list          (APPEND PROJECT_LIBRARIES gl)
 

@@ -13,7 +13,7 @@ class resource_base;
 class render_task_base
 {
 public:
-  explicit render_task_base  (const std::string& name) : name_(name)
+  explicit render_task_base  (const std::string& name) : name_(name), cull_immunity_(false)
   {
     
   }
@@ -23,15 +23,24 @@ public:
   render_task_base& operator=(const render_task_base&  that) = delete ;
   render_task_base& operator=(      render_task_base&& temp) = default;
 
-  const std::string& name    () const
+  const std::string& name             () const
   {
     return name_;
   }
-  void               set_name(const std::string& name)
+  void               set_name         (const std::string& name)
   {
     name_ = name;
   }
   
+  bool               cull_immunity    () const
+  {
+    return cull_immunity_;
+  }
+  void               set_cull_immunity(const bool cull_immunity)
+  {
+    cull_immunity_ = cull_immunity;
+  }
+
 protected:
   friend framegraph;
   friend render_task_builder;
@@ -39,10 +48,11 @@ protected:
   virtual void setup  (render_task_builder& builder)       = 0;
   virtual void execute()                             const = 0;
 
-  std::string                       name_   ;
-  std::vector<const resource_base*> creates_;
-  std::vector<const resource_base*> reads_  ;
-  std::vector<const resource_base*> writes_ ;
+  std::string                       name_         ;
+  bool                              cull_immunity_;
+  std::vector<const resource_base*> creates_      ;
+  std::vector<const resource_base*> reads_        ;
+  std::vector<const resource_base*> writes_       ;
 };
 }
 

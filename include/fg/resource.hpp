@@ -43,10 +43,6 @@ public:
   {
     return is_transient() ? std::get<std::unique_ptr<actual_type>>(actual_).get() : std::get<actual_type*>(actual_);
   }
-  bool                    is_transient() const
-  {
-    return std::holds_alternative<std::unique_ptr<actual_type>>(actual_);
-  }
 
 protected:
   void realize  () override

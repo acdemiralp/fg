@@ -25,18 +25,23 @@ public:
   resource_base& operator=(const resource_base&  that) = delete ;
   resource_base& operator=(      resource_base&& temp) = default;
                              
-  std::size_t        id      () const
+  std::size_t        id          () const
   {
     return id_;
   }                                                      
-  
-  const std::string& name    () const
+                                 
+  const std::string& name        () const
   {
     return name_;
   }
-  void               set_name(const std::string& name)
+  void               set_name    (const std::string& name)
   {
     name_ = name;
+  }
+
+  bool               is_transient() const
+  {
+    return creator_ != nullptr;
   }
 
 protected:

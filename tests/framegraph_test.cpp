@@ -87,6 +87,8 @@ TEST_CASE("Framegraph test.", "[framegraph]")
 
   auto& data_2 = render_task_2->data();
   REQUIRE(data_2.output->id() == 1);
+  
+  framegraph.add_retained_resource<glr::texture_description, gl::texture_2d>("Retained Resource 1", glr::texture_description(), nullptr);
 
   framegraph.compile();
   for(auto i = 0; i < 100; i++)

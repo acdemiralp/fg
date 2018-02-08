@@ -49,6 +49,11 @@ public:
     {
 
     }
+    // Reference count. Render passes +1 for each write. Resources +1 for each read.
+    // Identify resources with 0 references and push them to stack.
+    // While non-empty, pop resource, decrement reference count of its producer render task.
+    // If producer reference count is now 0, decrement reference counts of resources that it reads.
+    // If any of the resources' reference count is now 0, push them onto the stack and reiterate.
   }
   void                                     execute              () const
   {
@@ -69,6 +74,13 @@ public:
     std::ofstream stream(filepath);
     stream << "digraph framegraph {\n";
     stream << "\tnode [shape=rectangle]\n";
+
+    for (auto& render_task : render_tasks_)
+      stream << "\t\"" << render_task->name() << "\" [color=orange, fontcolor=orange]\n";
+    for (auto& resource    : resources_   )
+      stream << "\t\"" << resource   ->name() << "\"" << (resource->is_transient() ? "[color=blue, fontcolor=blue]" : "[color=navy, fontcolor=navy]") << "\n";
+
+
     for (auto& render_task : render_tasks_)
     {
       for (auto& resource : render_task->creates_)

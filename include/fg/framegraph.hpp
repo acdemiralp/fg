@@ -12,7 +12,6 @@
 
 namespace fg
 {
-// TODO: Finish compile, traverse.
 class framegraph
 {
 public:
@@ -40,20 +39,27 @@ public:
     resources_.emplace_back(std::make_unique<resource<description_type, actual_type>>(name, description, actual));
     return static_cast<resource<description_type, actual_type>*>(resources_.back().get());
   }
-  void                                     compile              () const
+  void                                     compile              ()
   {
-    for(auto& render_task : render_tasks_)
-    {
-      // Compute creation and destruction (last read) of transient resources.
-      // Cull resources which are not read or written.
-    }
+    // TODO: Cull and fill timeline.
+
+    // Compute creation and destruction (last read) of transient resources.
+    for(auto& resource : resources_)
+      if(resource->creator_)
+      {
+        // TODO.
+      }
+
+    // Cull resources and render tasks which are not read or written.
+    // TODO.
   }
-  void                                     traverse             () const
+  void                                     execute              () const
   {
-    for(auto& render_task : render_tasks_)
+    for(auto& step : timeline_)
     {
-      // Realize transient resources based on their computed lifetimes.
-      render_task->execute();
+      for (auto resource : step.realized_resources  ) resource->realize  ();
+      for (auto resource : step.derealized_resources) resource->derealize();
+      step.render_task->execute();
     }
   }
   void                                     clear                ()
@@ -65,8 +71,16 @@ public:
 protected:
   friend render_task_builder;
   
+  struct step
+  {
+    render_task_base*           render_task         ;
+    std::vector<resource_base*> realized_resources  ;
+    std::vector<resource_base*> derealized_resources;
+  };
+  
   std::vector<std::unique_ptr<render_task_base>> render_tasks_;
   std::vector<std::unique_ptr<resource_base>>    resources_   ;
+  std::vector<step>                              timeline_    ; // Computed during compilation.
 };
 
 template<typename resource_type, typename description_type>

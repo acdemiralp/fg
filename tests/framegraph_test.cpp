@@ -79,16 +79,18 @@ TEST_CASE("Framegraph test.", "[framegraph]")
   // Second render pass declaration.
   struct render_task_2_data
   {
-    glr::texture_2d_resource* input ;
+    glr::texture_2d_resource* input1;
+    glr::texture_2d_resource* input2;
+    glr::texture_2d_resource* input3;
     glr::texture_2d_resource* output;
   };
   auto render_task_2 = framegraph.add_render_task<render_task_2_data>(
     "Render Task 2",
     [&] (render_task_2_data& data, fg::render_task_builder& builder)
     {
-      data.input  = builder.read                            (data_1.output1);
-      data.input  = builder.read                            (data_1.output2);
-      data.input  = builder.write                           (data_1.output3);
+      data.input1 = builder.read                            (data_1.output1);
+      data.input2 = builder.read                            (data_1.output2);
+      data.input3 = builder.write                           (data_1.output3);
       data.output = builder.create<glr::texture_2d_resource>("Resource 4", glr::texture_description());
     },
     [=] (const render_task_2_data& data)

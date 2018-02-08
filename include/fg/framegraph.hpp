@@ -44,20 +44,30 @@ public:
   {
     timeline_.clear();
 
-    // TODO: Cull and fill timeline. Take cull immune render tasks into account.
+    // Reference counting.
+    std::vector<std::size_t> render_task_references(render_tasks_.size());
+    std::vector<std::size_t> resource_references   (resources_   .size());
+    for (auto i = 0; i < render_tasks_.size(); ++i)
+      render_task_references[i] = render_tasks_[i]->creates_.size() + render_tasks_[i]->writes_.size();
+    for (auto i = 0; i < resources_   .size(); ++i)
+      resource_references   [i] = resources_   [i]->readers_.size();
 
-    // Compute creation and destruction (last read) of transient resources.
-    for(auto& render_task : render_tasks_)
-    {
-
-    }
-    
-    // Reference count. Render passes +1 for each write. Resources +1 for each read.
-    
-    // Flood fill: Identify resources with 0 references and push them to stack.
-    // While non-empty, pop resource, decrement reference count of its producer render task.
-    // If producer reference count is now 0, decrement reference counts of resources that it reads.
-    // If any of the resources' reference count is now 0, push them onto the stack and reiterate.
+    // TODO: Cull and prepare the timeline with unculled render tasks and resources.
+    // - Vertex Culling via Flood Fill:
+    //   - For each resource with 0 references:
+    //     - Push it to a stack.
+    //   - For each element of the stack:
+    //     - Remove it from the framegraph.
+    //     - Decrement the references of creator/writer render tasks.
+    //     - For each creator/writer render task with 0 references and is not cull-immune:
+    //       - Decrement reference counts of its read resources.
+    //       - For each read resource with 0 references:
+    //         - Push it to the stack.
+    // - Timeline setup:
+    //   - The unculled render tasks are sequentially added to the timeline.
+    //   - The realization-derealization interval of transient resources (as part of the timeline) are computed via:
+    //     - A create marks the realization of a transient resource.
+    //     - The last read or write marks the derealization of a transient resource.
   }
   void                                     execute              () const
   {

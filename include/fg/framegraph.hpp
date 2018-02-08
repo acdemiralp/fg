@@ -70,9 +70,9 @@ public:
         }
       }
       
-      for(auto cwriter : unreferenced_resource->writers_)
+      for(auto c_writer : unreferenced_resource->writers_)
       {
-        auto writer = const_cast<render_task_base*>(cwriter);
+        auto writer = const_cast<render_task_base*>(c_writer);
         if(--writer->ref_count_ == 0 && !writer->cull_immunity())
         {
           for (auto iteratee : writer->reads_)
@@ -86,7 +86,9 @@ public:
     }
 
     timeline_.clear();
-    // - The referenced render tasks are sequentially added to the timeline.
+    for (auto& render_task : render_tasks_)
+      if (render_task->ref_count_ > 0 || render_task->cull_immunity())
+        timeline_.push_back(step{render_task.get()});
     // - The realization-derealization interval of transient resources (as part of the timeline) are computed via:
     //   - A create marks the realization of a transient resource.
     //   - The last read or write marks the derealization of a transient resource.

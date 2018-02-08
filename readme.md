@@ -8,5 +8,4 @@
     - A **retained** resource is a resource which has been imported into the framegraph. It is always real and specified during construction.
 
 - What is next?
-  - Finish framegraph compilation.
   - Asynchronous render tasks (+ resource/aliasing barriers).

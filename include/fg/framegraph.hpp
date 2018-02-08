@@ -1,6 +1,7 @@
 #ifndef FG_FRAMEGRAPH_HPP_
 #define FG_FRAMEGRAPH_HPP_
 
+#include <fstream>
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -23,7 +24,7 @@ public:
   framegraph& operator=(      framegraph&& temp) = default;
 
   template<typename data_type, typename... argument_types>
-  render_task<data_type>*                  add_render_task      (argument_types&&...     arguments  )
+  render_task<data_type>*                  add_render_task      (argument_types&&... arguments)
   {
     render_tasks_.emplace_back(std::make_unique<render_task<data_type>>(arguments...));
     auto render_task = render_tasks_.back().get();
@@ -41,17 +42,13 @@ public:
   }
   void                                     compile              ()
   {
-    // TODO: Cull and fill timeline.
+    // TODO: Cull and fill timeline. Take cull immune render tasks into account.
 
     // Compute creation and destruction (last read) of transient resources.
-    for(auto& resource : resources_)
-      if(resource->creator_)
-      {
-        // TODO.
-      }
+    for(auto& render_task : render_tasks_)
+    {
 
-    // Cull resources and render tasks which are not read or written.
-    // TODO.
+    }
   }
   void                                     execute              () const
   {
@@ -66,6 +63,25 @@ public:
   {
     render_tasks_.clear();
     resources_   .clear();
+  }
+  void                                     export_graphviz      (const std::string& filepath)
+  {
+    std::ofstream stream(filepath);
+    stream << "digraph framegraph {\n";
+    stream << "\tnode [shape=rectangle]\n";
+    for (auto& render_task : render_tasks_)
+    {
+      for (auto& resource : render_task->creates_)
+        stream << "\t\"" << render_task->name()    << "\" -> \"" << resource   ->name() << "\" [color=green]\n";
+      for (auto& resource : render_task->reads_  )
+        stream << "\t\"" << resource   ->name   () << "\" -> \"" << render_task->name() << "\" [color=red]\n";
+      for (auto& resource : render_task->writes_ )
+      {
+        stream << "\t\"" << render_task->name()    << "\" -> \"" << resource   ->name() << "\" [color=yellow]\n";
+        stream << "\t\"" << resource   ->name()    << "\" -> \"" << render_task->name() << "\" [color=yellow]\n";
+      }
+    }
+    stream << "}\n";
   }
 
 protected:

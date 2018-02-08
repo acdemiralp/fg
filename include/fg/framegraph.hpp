@@ -78,7 +78,7 @@ public:
     for (auto& render_task : render_tasks_)
       stream << "\t\"" << render_task->name() << "\" [color=orange, fontcolor=orange]\n";
     for (auto& resource    : resources_   )
-      stream << "\t\"" << resource   ->name() << "\"" << (resource->is_transient() ? "[color=blue, fontcolor=blue]" : "[color=navy, fontcolor=navy]") << "\n";
+      stream << "\t\"" << resource   ->name() << "\" " << (resource->is_transient() ? "[color=blue, fontcolor=blue]" : "[color=navy, fontcolor=navy]") << "\n";
     for (auto& render_task : render_tasks_)
     {
       for (auto& resource : render_task->creates_)

@@ -84,29 +84,51 @@ TEST_CASE("Framegraph test.", "[framegraph]")
   {
     glr::texture_2d_resource* input1;
     glr::texture_2d_resource* input2;
-    glr::texture_2d_resource* input3;
-    glr::texture_2d_resource* output;
+    glr::texture_2d_resource* output1;
+    glr::texture_2d_resource* output2;
   };
   auto render_task_2 = framegraph.add_render_task<render_task_2_data>(
     "Render Task 2",
     [&] (render_task_2_data& data, fg::render_task_builder& builder)
     {
-      data.input1 = builder.read                            (data_1.output1);
-      data.input2 = builder.read                            (data_1.output2);
-      data.input3 = builder.write                           (data_1.output3);
-      data.output = builder.create<glr::texture_2d_resource>("Resource 4", glr::texture_description());
+      data.input1  = builder.read                            (data_1.output1);
+      data.input2  = builder.read                            (data_1.output2);
+      data.output1 = builder.write                           (data_1.output3);
+      data.output2 = builder.create<glr::texture_2d_resource>("Resource 4", glr::texture_description());
     },
     [=] (const render_task_2_data& data)
     {
       // Perform actual rendering. You may load resources from CPU by capturing them.
-      auto actual1 = data.input1->actual();
-      auto actual2 = data.input2->actual();
-      auto actual3 = data.input3->actual();
-      auto actual4 = data.output->actual();
+      auto actual1 = data.input1 ->actual();
+      auto actual2 = data.input2 ->actual();
+      auto actual3 = data.output1->actual();
+      auto actual4 = data.output2->actual();
     });
 
   auto& data_2 = render_task_2->data();
-  REQUIRE(data_2.output->id() == 4);
+  REQUIRE(data_2.output2->id() == 4);
+
+  struct render_task_3_data
+  {
+    glr::texture_2d_resource* input1;
+    glr::texture_2d_resource* input2;
+    glr::texture_2d_resource* output;
+  };
+  auto render_task_3 = framegraph.add_render_task<render_task_3_data>(
+    "Render Task 3",
+    [&] (render_task_3_data& data, fg::render_task_builder& builder)
+    {
+      data.input1 = builder.read (data_2.output1);
+      data.input2 = builder.read (data_2.output2);
+      data.output = builder.write(retained_resource);
+    },
+    [=] (const render_task_3_data& data)
+    {
+      // Perform actual rendering. You may load resources from CPU by capturing them.
+      auto actual1 = data.input1->actual();
+      auto actual2 = data.input2->actual();
+      auto actual3 = data.output->actual();
+    });
   
   framegraph.compile        ();
   for(auto i = 0; i < 100; i++)

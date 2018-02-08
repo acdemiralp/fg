@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <memory>
+#include <stack>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -42,32 +43,53 @@ public:
   }
   void                                     compile              ()
   {
-    timeline_.clear();
-
     // Reference counting.
-    std::vector<std::size_t> render_task_references(render_tasks_.size());
-    std::vector<std::size_t> resource_references   (resources_   .size());
-    for (auto i = 0; i < render_tasks_.size(); ++i)
-      render_task_references[i] = render_tasks_[i]->creates_.size() + render_tasks_[i]->writes_.size();
-    for (auto i = 0; i < resources_   .size(); ++i)
-      resource_references   [i] = resources_   [i]->readers_.size();
+    for (auto& render_task : render_tasks_)
+      render_task->ref_count_ = render_task->creates_.size() + render_task->writes_.size();
+    for (auto& resource    : resources_   )
+      resource   ->ref_count_ = resource   ->readers_.size();
 
-    // TODO: Cull and prepare the timeline with unculled render tasks and resources.
-    // - Vertex Culling via Flood Fill:
-    //   - For each resource with 0 references:
-    //     - Push it to a stack.
-    //   - For each element of the stack:
-    //     - Remove it from the framegraph.
-    //     - Decrement the references of creator/writer render tasks.
-    //     - For each creator/writer render task with 0 references and is not cull-immune:
-    //       - Decrement reference counts of its read resources.
-    //       - For each read resource with 0 references:
-    //         - Push it to the stack.
-    // - Timeline setup:
-    //   - The unculled render tasks are sequentially added to the timeline.
-    //   - The realization-derealization interval of transient resources (as part of the timeline) are computed via:
-    //     - A create marks the realization of a transient resource.
-    //     - The last read or write marks the derealization of a transient resource.
+    // Culling via flood fill from unreferenced resources.
+    std::stack<resource_base*> unreferenced_resources;
+    for (auto& resource : resources_)
+      if (resource->ref_count_ == 0 && resource->is_transient())
+        unreferenced_resources.push(resource.get());
+    while (!unreferenced_resources.empty())
+    {
+      auto unreferenced_resource = unreferenced_resources.top();
+      unreferenced_resources.pop();
+
+      auto creator = const_cast<render_task_base*>(unreferenced_resource->creator_);
+      if(--creator->ref_count_ == 0 && !creator->cull_immunity())
+      {
+        for (auto iteratee : creator->reads_)
+        {
+          auto read_resource = const_cast<resource_base*>(iteratee);
+          if (--read_resource->ref_count_ == 0 && read_resource->is_transient())
+            unreferenced_resources.push(read_resource);
+        }
+      }
+      
+      for(auto cwriter : unreferenced_resource->writers_)
+      {
+        auto writer = const_cast<render_task_base*>(cwriter);
+        if(--writer->ref_count_ == 0 && !writer->cull_immunity())
+        {
+          for (auto iteratee : writer->reads_)
+          {
+            auto read_resource = const_cast<resource_base*>(iteratee);
+            if (--read_resource->ref_count_ == 0 && read_resource->is_transient())
+              unreferenced_resources.push(read_resource);
+          }
+        }
+      }
+    }
+
+    timeline_.clear();
+    // - The referenced render tasks are sequentially added to the timeline.
+    // - The realization-derealization interval of transient resources (as part of the timeline) are computed via:
+    //   - A create marks the realization of a transient resource.
+    //   - The last read or write marks the derealization of a transient resource.
   }
   void                                     execute              () const
   {

@@ -1,6 +1,7 @@
 #ifndef FG_RENDER_TASK_BASE_HPP_
 #define FG_RENDER_TASK_BASE_HPP_
 
+#include <cstddef>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,7 @@ class resource_base;
 class render_task_base
 {
 public:
-  explicit render_task_base  (const std::string& name) : name_(name), cull_immunity_(false)
+  explicit render_task_base  (const std::string& name) : name_(name), cull_immunity_(false), ref_count_(0)
   {
     
   }
@@ -53,6 +54,7 @@ protected:
   std::vector<const resource_base*> creates_      ;
   std::vector<const resource_base*> reads_        ;
   std::vector<const resource_base*> writes_       ;
+  std::size_t                       ref_count_    ;
 };
 }
 

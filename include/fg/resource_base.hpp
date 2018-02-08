@@ -14,7 +14,7 @@ class render_task_builder;
 class resource_base
 {
 public:
-  explicit resource_base  (const std::string& name, const render_task_base* creator) : name_(name), creator_(creator)
+  explicit resource_base  (const std::string& name, const render_task_base* creator) : name_(name), creator_(creator), ref_count_(0)
   {
     static std::size_t id = 0;
     id_ = id++;
@@ -51,11 +51,12 @@ protected:
   virtual void realize  () = 0;
   virtual void derealize() = 0;
 
-  std::size_t                          id_     ;
-  std::string                          name_   ;
-  const render_task_base*              creator_;
-  std::vector<const render_task_base*> readers_;
-  std::vector<const render_task_base*> writers_;
+  std::size_t                          id_       ;
+  std::string                          name_     ;
+  const render_task_base*              creator_  ;
+  std::vector<const render_task_base*> readers_  ;
+  std::vector<const render_task_base*> writers_  ;
+  std::size_t                          ref_count_;
 };
 }
 

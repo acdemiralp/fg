@@ -17,10 +17,10 @@ class framegraph
 {
 public:
   framegraph           ()                        = default;
-  framegraph           (const framegraph&  that) = default;
+  framegraph           (const framegraph&  that) = delete ;
   framegraph           (      framegraph&& temp) = default;
   virtual ~framegraph  ()                        = default;
-  framegraph& operator=(const framegraph&  that) = default;
+  framegraph& operator=(const framegraph&  that) = delete ;
   framegraph& operator=(      framegraph&& temp) = default;
 
   template<typename data_type, typename... argument_types>
@@ -42,6 +42,8 @@ public:
   }
   void                                     compile              ()
   {
+    timeline_.clear();
+
     // TODO: Cull and fill timeline. Take cull immune render tasks into account.
 
     // Compute creation and destruction (last read) of transient resources.
@@ -49,8 +51,10 @@ public:
     {
 
     }
+    
     // Reference count. Render passes +1 for each write. Resources +1 for each read.
-    // Identify resources with 0 references and push them to stack.
+    
+    // Flood fill: Identify resources with 0 references and push them to stack.
     // While non-empty, pop resource, decrement reference count of its producer render task.
     // If producer reference count is now 0, decrement reference counts of resources that it reads.
     // If any of the resources' reference count is now 0, push them onto the stack and reiterate.

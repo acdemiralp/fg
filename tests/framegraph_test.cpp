@@ -90,6 +90,6 @@ TEST_CASE("Framegraph test.", "[framegraph]")
 
   framegraph.compile();
   for(auto i = 0; i < 100; i++)
-    framegraph.traverse();
+    framegraph.execute();
   framegraph.clear  ();
 }

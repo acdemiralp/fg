@@ -13,6 +13,7 @@ A **transient** resource is owned, realized and virtualized by the framegraph.
 A **retained** resource is always real and is imported into the framegraph.
 
 **Usage**
+
 First, create descriptions for your rendering resources (e.g. buffers, textures) and declare them as framegraph resources.
 ```cxx
 namespace glr

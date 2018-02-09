@@ -1,6 +1,7 @@
 **What is a framegraph?** 
 A rendering abstraction which describes a frame as a directed acyclic graph of render tasks and resources.
-  
+Based on the Game Developers Conference (GDC) presentation by Yuriy O’Donnell on EA Frostbite’s rendering architecture.
+
 **What is a render task?** 
 A compute or graphics task to be performed as part of a rendering pipeline.
 
@@ -11,5 +12,93 @@ While real, the resource is instantiated and ready for use.
 A **transient** resource is owned, realized and virtualized by the framegraph. 
 A **retained** resource is always real and is imported into the framegraph.
 
-**What is next?** 
-Asynchronous render tasks (+ resource/aliasing barriers).
+**Usage**
+First, create descriptions for your rendering resources (e.g. buffers, textures) and declare them as framegraph resources.
+```cxx
+namespace glr
+{
+struct buffer_description
+{
+  std::size_t size;
+};
+struct texture_description
+{
+  std::size_t                levels;
+  GLenum                     format;
+  std::array<std::size_t, 3> size  ;
+};
+
+using buffer_resource     = fg::resource<buffer_description , gl::buffer    >;
+using texture_1d_resource = fg::resource<texture_description, gl::texture_1d>;
+using texture_2d_resource = fg::resource<texture_description, gl::texture_2d>;
+using texture_3d_resource = fg::resource<texture_description, gl::texture_3d>;
+}
+```
+
+Then, specialize `fg::realize<description_type, actual_type>` for each of your resources. This function takes in a resource description and returns an actual resource.
+```cxx
+namespace fg
+{
+template<>
+std::unique_ptr<gl::buffer>     realize(const glr::buffer_description&  description)
+{
+  auto   actual = std::make_unique<gl::buffer>(); 
+  actual->set_data_immutable(static_cast<GLsizeiptr>(description.size));
+  return actual;
+}
+template<>
+std::unique_ptr<gl::texture_2d> realize(const glr::texture_description& description)
+{
+  auto   actual = std::make_unique<gl::texture_2d>();
+  actual->set_storage(static_cast<GLsizei>(description.levels), description.format, static_cast<GLsizei>(description.size[0]), static_cast<GLsizei>(description.size[1]));
+  return actual;
+}
+}
+```
+
+You are now ready to create a framegraph and add your render tasks / retained resources to it.
+```cxx
+fg::framegraph framegraph;
+
+auto retained_resource = framegraph.add_retained_resource<glr::texture_description, gl::texture_2d>("Backbuffer", glr::texture_description(), backbuffer);
+
+struct render_task_data
+{
+  glr::texture_2d_resource* input1;
+  glr::texture_2d_resource* input2;
+  glr::texture_2d_resource* input3;
+  glr::texture_2d_resource* output;
+};
+auto render_task = framegraph.add_render_task<render_task_data>(
+  "Render Task",
+  [&] (render_task_data& data, fg::render_task_builder& builder)
+  {
+    data.input1 = builder.create<glr::texture_2d_resource>("Texture 1", glr::texture_description());
+    data.input2 = builder.create<glr::texture_2d_resource>("Texture 2", glr::texture_description());
+    data.input3 = builder.create<glr::texture_2d_resource>("Texture 3", glr::texture_description());
+    data.output = builder.write <glr::texture_2d_resource>(retained_resource);
+  },
+  [=] (const render_task_data& data)
+  {
+    auto actual1 = data.input1->actual();
+    auto actual2 = data.input2->actual();
+    auto actual3 = data.input3->actual();
+    auto actual4 = data.output->actual();
+    // Perform actual rendering. You may load resources from CPU by capturing them.
+  });
+
+auto& data = render_task->data();
+```
+
+Compile once all render tasks and resources are added.
+```cpp
+framegraph.compile();
+```
+
+Execute in your renderer on each frame.
+```
+framegraph.execute();
+```
+
+**Next Steps** 
+- Asynchronous render tasks (+ resource/aliasing barriers).

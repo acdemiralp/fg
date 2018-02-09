@@ -41,17 +41,17 @@ public:
   }
   actual_type*            actual      () const // If transient, only valid through the realized interval of the resource.
   {
-    return is_transient() ? std::get<std::unique_ptr<actual_type>>(actual_).get() : std::get<actual_type*>(actual_);
+    return transient() ? std::get<std::unique_ptr<actual_type>>(actual_).get() : std::get<actual_type*>(actual_);
   }
 
 protected:
   void realize  () override
   {
-    if (is_transient()) std::get<std::unique_ptr<actual_type>>(actual_) = fg::realize<description_type, actual_type>(description_);
+    if (transient()) std::get<std::unique_ptr<actual_type>>(actual_) = fg::realize<description_type, actual_type>(description_);
   }
   void derealize() override
   {
-    if (is_transient()) std::get<std::unique_ptr<actual_type>>(actual_).reset();
+    if (transient()) std::get<std::unique_ptr<actual_type>>(actual_).reset();
   }
 
   description_type                                         description_;

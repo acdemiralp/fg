@@ -52,7 +52,7 @@ public:
     // Culling via flood fill from unreferenced resources.
     std::stack<resource_base*> unreferenced_resources;
     for (auto& resource : resources_)
-      if (resource->ref_count_ == 0 && resource->is_transient())
+      if (resource->ref_count_ == 0 && resource->transient())
         unreferenced_resources.push(resource.get());
     while (!unreferenced_resources.empty())
     {
@@ -60,12 +60,12 @@ public:
       unreferenced_resources.pop();
 
       auto creator = const_cast<render_task_base*>(unreferenced_resource->creator_);
-      if(--creator->ref_count_ == 0 && !creator->cull_immunity())
+      if(--creator->ref_count_ == 0 && !creator->cull_immune())
       {
         for (auto iteratee : creator->reads_)
         {
           auto  read_resource = const_cast<resource_base*>(iteratee);
-          if (--read_resource->ref_count_ == 0 && read_resource->is_transient())
+          if (--read_resource->ref_count_ == 0 && read_resource->transient())
             unreferenced_resources.push(read_resource);
         }
       }
@@ -73,12 +73,12 @@ public:
       for(auto c_writer : unreferenced_resource->writers_)
       {
         auto writer = const_cast<render_task_base*>(c_writer);
-        if(--writer->ref_count_ == 0 && !writer->cull_immunity())
+        if(--writer->ref_count_ == 0 && !writer->cull_immune())
         {
           for (auto iteratee : writer->reads_)
           {
             auto  read_resource = const_cast<resource_base*>(iteratee);
-            if (--read_resource->ref_count_ == 0 && read_resource->is_transient())
+            if (--read_resource->ref_count_ == 0 && read_resource->transient())
               unreferenced_resources.push(read_resource);
           }
         }
@@ -89,7 +89,7 @@ public:
     timeline_.clear();
     for (auto& render_task : render_tasks_)
     {
-      if (render_task->ref_count_ > 0 || render_task->cull_immunity())
+      if (render_task->ref_count_ > 0 || render_task->cull_immune())
       {
         std::vector<resource_base*> realized_resources, derealized_resources;
 
@@ -99,8 +99,8 @@ public:
           if (resource->readers_.empty() && resource->writers_.empty())
             derealized_resources.push_back(const_cast<resource_base*>(resource));
         }
-          
-        // TODO The last read (or write) marks the derealization of a transient resource.
+        
+        // TODO The last read or write depending on which one is latter, marks the derealization of a transient resource.
         for (auto read_resource : render_task->reads_)
           if (read_resource->readers_.size() > 0 && read_resource->readers_.back() == render_task.get())
             derealized_resources.push_back(const_cast<resource_base*>(read_resource));
@@ -137,7 +137,7 @@ public:
     stream << "\n";
 
     for (auto& resource    : resources_   )
-      stream << "\"" << resource   ->name() << "\" [label=\"" << resource   ->name() + "\\nID: " << resource->id() << "\", style=filled, fillcolor= " << (resource->is_transient() ? "skyblue" : "steelblue") << "]\n";
+      stream << "\"" << resource   ->name() << "\" [label=\"" << resource   ->name() + "\\nID: " << resource->id() << "\", style=filled, fillcolor= " << (resource->transient() ? "skyblue" : "steelblue") << "]\n";
     stream << "\n";
     
     for (auto& render_task : render_tasks_)

@@ -50,7 +50,7 @@ TEST_CASE("Framegraph test.", "[framegraph]")
 {
   fg::framegraph framegraph;
 
-  auto retained_resource = framegraph.add_retained_resource<glr::texture_description, gl::texture_2d>("Retained Resource 1", glr::texture_description(), nullptr);
+  auto retained_resource = framegraph.add_retained_resource("Retained Resource 1", glr::texture_description(), static_cast<gl::texture_2d*>(nullptr));
 
   // First render task declaration.
   struct render_task_1_data

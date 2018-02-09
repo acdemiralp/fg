@@ -36,7 +36,7 @@ using texture_2d_resource = fg::resource<texture_description, gl::texture_2d>;
 using texture_3d_resource = fg::resource<texture_description, gl::texture_3d>;
 ```
 
-Then, specialize `fg::realize<description_type, actual_type>` for each of your resources. This function takes in a resource description and returns an actual resource.
+Then, specialize `fg::realize<description_type, actual_type>` for each declared resource. This function takes in a resource description and returns an actual resource.
 ```cxx
 namespace fg
 {
@@ -98,7 +98,7 @@ auto render_task = framegraph.add_render_task<render_task_data>(
 auto& data = render_task->data();
 ```
 
-Once all render tasks and resources are added call `framegraph.compile()` and then `framegraph.execute()` during each update.
+Once all render tasks and resources are added call `framegraph.compile()`. Then, `framegraph.execute()` during each update.
 
 **Next Steps** 
 - Asynchronous render tasks (+ resource/aliasing barriers).

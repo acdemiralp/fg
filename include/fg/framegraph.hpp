@@ -64,7 +64,7 @@ public:
       {
         for (auto iteratee : creator->reads_)
         {
-          auto read_resource = const_cast<resource_base*>(iteratee);
+          auto  read_resource = const_cast<resource_base*>(iteratee);
           if (--read_resource->ref_count_ == 0 && read_resource->is_transient())
             unreferenced_resources.push(read_resource);
         }
@@ -77,7 +77,7 @@ public:
         {
           for (auto iteratee : writer->reads_)
           {
-            auto read_resource = const_cast<resource_base*>(iteratee);
+            auto  read_resource = const_cast<resource_base*>(iteratee);
             if (--read_resource->ref_count_ == 0 && read_resource->is_transient())
               unreferenced_resources.push(read_resource);
           }
@@ -85,21 +85,37 @@ public:
       }
     }
 
+    // Timeline computation.
     timeline_.clear();
     for (auto& render_task : render_tasks_)
+    {
       if (render_task->ref_count_ > 0 || render_task->cull_immunity())
-        timeline_.push_back(step{render_task.get()});
-    // - The realization-derealization interval of transient resources (as part of the timeline) are computed via:
-    //   - A create marks the realization of a transient resource.
-    //   - The last read or write marks the derealization of a transient resource.
+      {
+        std::vector<resource_base*> realized_resources, derealized_resources;
+
+        for (auto resource : render_task->creates_)
+        {
+          realized_resources.push_back(const_cast<resource_base*>(resource));
+          if (resource->readers_.empty() && resource->writers_.empty())
+            derealized_resources.push_back(const_cast<resource_base*>(resource));
+        }
+          
+        // TODO The last read (or write) marks the derealization of a transient resource.
+        for (auto read_resource : render_task->reads_)
+          if (read_resource->readers_.size() > 0 && read_resource->readers_.back() == render_task.get())
+            derealized_resources.push_back(const_cast<resource_base*>(read_resource));
+
+        timeline_.push_back(step{render_task.get(), realized_resources, derealized_resources});
+      }
+    }
   }
   void                                     execute              () const
   {
     for(auto& step : timeline_)
     {
       for (auto resource : step.realized_resources  ) resource->realize  ();
-      for (auto resource : step.derealized_resources) resource->derealize();
       step.render_task->execute();
+      for (auto resource : step.derealized_resources) resource->derealize();
     }
   }
   void                                     clear                ()

@@ -19,8 +19,6 @@ A **retained** resource is always real and is imported into the framegraph.
 
 First, create descriptions for your rendering resources (e.g. buffers, textures) and declare them as framegraph resources.
 ```cxx
-namespace glr
-{
 struct buffer_description
 {
   std::size_t size;
@@ -36,7 +34,6 @@ using buffer_resource     = fg::resource<buffer_description , gl::buffer    >;
 using texture_1d_resource = fg::resource<texture_description, gl::texture_1d>;
 using texture_2d_resource = fg::resource<texture_description, gl::texture_2d>;
 using texture_3d_resource = fg::resource<texture_description, gl::texture_3d>;
-}
 ```
 
 Then, specialize `fg::realize<description_type, actual_type>` for each of your resources. This function takes in a resource description and returns an actual resource.
@@ -44,21 +41,21 @@ Then, specialize `fg::realize<description_type, actual_type>` for each of your r
 namespace fg
 {
 template<>
-std::unique_ptr<gl::buffer>     realize(const glr::buffer_description&  description)
+std::unique_ptr<gl::buffer>     realize(const buffer_description&  description)
 {
   auto actual = std::make_unique<gl::buffer>(); 
-  actual->set_data_immutable(static_cast<GLsizeiptr>(description.size));
+  actual->set_size(static_cast<GLsizeiptr>(description.size));
   return actual;
 }
 template<>
-std::unique_ptr<gl::texture_2d> realize(const glr::texture_description& description)
+std::unique_ptr<gl::texture_2d> realize(const texture_description& description)
 {
   auto actual = std::make_unique<gl::texture_2d>();
   actual->set_storage(
-    static_cast<GLsizei>(description.levels), 
-    description.format, 
-    static_cast<GLsizei>(description.size[0]), 
-    static_cast<GLsizei>(description.size[1]));
+    description.levels , 
+    description.format , 
+    description.size[0], 
+    description.size[1]);
   return actual;
 }
 }
@@ -68,26 +65,26 @@ You are now ready to create a framegraph and add your render tasks / retained re
 ```cxx
 fg::framegraph framegraph;
 
-auto retained_resource = framegraph.add_retained_resource<glr::texture_description, gl::texture_2d>(
+auto retained_resource = framegraph.add_retained_resource<texture_description, gl::texture_2d>(
   "Backbuffer", 
-  glr::texture_description(), 
+  texture_description(), 
   backbuffer);
 
 struct render_task_data
 {
-  glr::texture_2d_resource* input1;
-  glr::texture_2d_resource* input2;
-  glr::texture_2d_resource* input3;
-  glr::texture_2d_resource* output;
+  texture_2d_resource* input1;
+  texture_2d_resource* input2;
+  texture_2d_resource* input3;
+  texture_2d_resource* output;
 };
 auto render_task = framegraph.add_render_task<render_task_data>(
   "Render Task",
   [&] (render_task_data& data, fg::render_task_builder& builder)
   {
-    data.input1 = builder.create<glr::texture_2d_resource>("Texture 1", glr::texture_description());
-    data.input2 = builder.create<glr::texture_2d_resource>("Texture 2", glr::texture_description());
-    data.input3 = builder.create<glr::texture_2d_resource>("Texture 3", glr::texture_description());
-    data.output = builder.write <glr::texture_2d_resource>(retained_resource);
+    data.input1 = builder.create<texture_2d_resource>("Texture 1", texture_description());
+    data.input2 = builder.create<texture_2d_resource>("Texture 2", texture_description());
+    data.input3 = builder.create<texture_2d_resource>("Texture 3", texture_description());
+    data.output = builder.write <texture_2d_resource>(retained_resource);
   },
   [=] (const render_task_data& data)
   {

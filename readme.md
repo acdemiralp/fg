@@ -1,16 +1,18 @@
 **What is a framegraph?** 
+
 A rendering abstraction which describes a frame as a directed acyclic graph of render tasks and resources.
 Based on the Game Developers Conference (GDC) presentation by Yuriy O’Donnell on EA Frostbite’s rendering architecture.
 
 **What is a render task?** 
+
 A compute or graphics task to be performed as part of a rendering pipeline.
 
 **What is a resource?** 
+
 Data created, read or written by a render task. Alternates between two states; virtual and real.
 While virtual, the resource is not instantiated but contains the necessary information to do so. 
 While real, the resource is instantiated and ready for use.
-A **transient** resource is owned, realized and virtualized by the framegraph. 
-A **retained** resource is always real and is imported into the framegraph.
+A **transient** resource is owned, realized and virtualized by the framegraph and a **retained** resource is always real and is imported into the framegraph.
 
 **Usage**
 
@@ -51,7 +53,11 @@ template<>
 std::unique_ptr<gl::texture_2d> realize(const glr::texture_description& description)
 {
   auto   actual = std::make_unique<gl::texture_2d>();
-  actual->set_storage(static_cast<GLsizei>(description.levels), description.format, static_cast<GLsizei>(description.size[0]), static_cast<GLsizei>(description.size[1]));
+  actual->set_storage(
+    static_cast<GLsizei>(description.levels), 
+    description.format, 
+    static_cast<GLsizei>(description.size[0]), 
+    static_cast<GLsizei>(description.size[1]));
   return actual;
 }
 }
@@ -61,7 +67,10 @@ You are now ready to create a framegraph and add your render tasks / retained re
 ```cxx
 fg::framegraph framegraph;
 
-auto retained_resource = framegraph.add_retained_resource<glr::texture_description, gl::texture_2d>("Backbuffer", glr::texture_description(), backbuffer);
+auto retained_resource = framegraph.add_retained_resource<glr::texture_description, gl::texture_2d>(
+  "Backbuffer", 
+  glr::texture_description(), 
+  backbuffer);
 
 struct render_task_data
 {

@@ -1,7 +1,7 @@
 **What is a framegraph?** 
 
 A rendering abstraction which describes a frame as a directed acyclic graph of render tasks and resources.
-Based on the Game Developers Conference (GDC) presentation by Yuriy O’Donnell on EA Frostbite’s rendering architecture.
+Based on the [Game Developers Conference (GDC) presentation by Yuriy O’Donnell](https://www.gdcvault.com/play/1024612/FrameGraph-Extensible-Rendering-Architecture-in) on Frostbite Engine’s rendering architecture.
 
 **What is a render task?** 
 

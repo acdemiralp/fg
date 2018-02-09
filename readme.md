@@ -12,7 +12,8 @@ A compute or graphics task to be performed as part of a rendering pipeline.
 Data created, read or written by a render task. Alternates between two states; virtual and real.
 While virtual, the resource is not instantiated but contains the necessary information to do so. 
 While real, the resource is instantiated and ready for use.
-A **transient** resource is owned, realized and virtualized by the framegraph and a **retained** resource is always real and is imported into the framegraph.
+A **transient** resource is owned, realized and virtualized by the framegraph.
+A **retained** resource is always real and is imported into the framegraph.
 
 **Usage**
 
@@ -45,14 +46,14 @@ namespace fg
 template<>
 std::unique_ptr<gl::buffer>     realize(const glr::buffer_description&  description)
 {
-  auto   actual = std::make_unique<gl::buffer>(); 
+  auto actual = std::make_unique<gl::buffer>(); 
   actual->set_data_immutable(static_cast<GLsizeiptr>(description.size));
   return actual;
 }
 template<>
 std::unique_ptr<gl::texture_2d> realize(const glr::texture_description& description)
 {
-  auto   actual = std::make_unique<gl::texture_2d>();
+  auto actual = std::make_unique<gl::texture_2d>();
   actual->set_storage(
     static_cast<GLsizei>(description.levels), 
     description.format, 

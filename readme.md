@@ -65,10 +65,11 @@ You are now ready to create a framegraph and add your render tasks / retained re
 ```cxx
 fg::framegraph framegraph;
 
-auto retained_resource = framegraph.add_retained_resource<texture_description, gl::texture_2d>(
+gl::texture_2d backbuffer;
+auto retained_resource = framegraph.add_retained_resource(
   "Backbuffer", 
   texture_description(), 
-  backbuffer);
+  &backbuffer);
 
 struct render_task_data
 {

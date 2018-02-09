@@ -183,11 +183,11 @@ public:
     stream << "node [shape=rectangle, fontname=\"helvetica\", fontsize=12]\n\n";
 
     for (auto& render_task : render_tasks_)
-      stream << "\"" << render_task->name() << "\" [label=\"" << render_task->name() << "\", style=filled, fillcolor=darkorange]\n";
+      stream << "\"" << render_task->name() << "\" [label=\"" << render_task->name() << "\\nRefs: " << render_task->ref_count_ << "\", style=filled, fillcolor=darkorange]\n";
     stream << "\n";
 
     for (auto& resource    : resources_   )
-      stream << "\"" << resource   ->name() << "\" [label=\"" << resource   ->name() + "\\nID: " << resource->id() << "\", style=filled, fillcolor= " << (resource->transient() ? "skyblue" : "steelblue") << "]\n";
+      stream << "\"" << resource   ->name() << "\" [label=\"" << resource   ->name() << "\\nRefs: " << resource   ->ref_count_ << "\\nID: " << resource->id() << "\", style=filled, fillcolor= " << (resource->transient() ? "skyblue" : "steelblue") << "]\n";
     stream << "\n";
     
     for (auto& render_task : render_tasks_)

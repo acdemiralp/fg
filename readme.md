@@ -98,7 +98,7 @@ auto render_task = framegraph.add_render_task<render_task_data>(
 auto& data = render_task->data();
 ```
 
-Once all render tasks and resources are added call `framegraph.compile()`. Then, `framegraph.execute()` during each update.
+Once all render tasks and resources are added, call `framegraph.compile()`. Then, `framegraph.execute()` in each update.
 
 **Next Steps** 
-- Asynchronous render tasks (+ resource/aliasing barriers).
+- Asynchronous render tasks (+ resource / aliasing barriers).

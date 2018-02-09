@@ -1,9 +1,17 @@
 #include "catch.hpp"
 
-#include <gl/buffer.hpp>
-#include <gl/texture.hpp>
+#include <array>
+#include <cstddef>
 
 #include <fg/framegraph.hpp>
+
+namespace gl
+{
+  using buffer     = std::size_t;
+  using texture_1d = std::size_t;
+  using texture_2d = std::size_t;
+  using texture_3d = std::size_t;
+}
 
 namespace glr
 {
@@ -14,7 +22,7 @@ struct buffer_description
 struct texture_description
 {
   std::size_t                levels;
-  GLenum                     format;
+  std::size_t                format;
   std::array<std::size_t, 3> size  ;
 };
 
@@ -29,16 +37,12 @@ namespace fg
 template<>
 std::unique_ptr<gl::buffer>     realize(const glr::buffer_description&  description)
 {
-  auto   actual = std::make_unique<gl::buffer>(); 
-  actual->set_data_immutable(static_cast<GLsizeiptr>(description.size));
-  return actual;
+  return std::make_unique<gl::buffer>(description.size);
 }
 template<>
 std::unique_ptr<gl::texture_2d> realize(const glr::texture_description& description)
 {
-  auto   actual = std::make_unique<gl::texture_2d>();
-  actual->set_storage(static_cast<GLsizei>(description.levels), description.format, static_cast<GLsizei>(description.size[0]), static_cast<GLsizei>(description.size[1]));
-  return actual;
+  return std::make_unique<gl::buffer>(description.levels);
 }
 }
 

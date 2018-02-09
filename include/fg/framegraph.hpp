@@ -1,7 +1,10 @@
 #ifndef FG_FRAMEGRAPH_HPP_
 #define FG_FRAMEGRAPH_HPP_
 
+#include <algorithm>
 #include <fstream>
+#include <iterator>
+#include <limits>
 #include <memory>
 #include <stack>
 #include <string>
@@ -101,22 +104,56 @@ public:
         continue;
       
       std::vector<resource_base*> realized_resources, derealized_resources;
+
       for (auto resource : render_task->creates_)
       {
         realized_resources.push_back(const_cast<resource_base*>(resource));
         if (resource->readers_.empty() && resource->writers_.empty())
           derealized_resources.push_back(const_cast<resource_base*>(resource));
       }
-      for (auto resource : render_task->reads_  )
+
+      auto reads_writes = render_task->reads_;
+      reads_writes.insert(reads_writes.end(), render_task->writes_.begin(), render_task->writes_.end());
+      for (auto resource : reads_writes)
       {
-        // Find the execution index of render tasks which read and write to the read resource. Derealize if this render task is last.
-          
-        //if (resource->readers_.size() > 0 && resource->readers_.back() == render_task.get())
-        //  derealized_resources.push_back(const_cast<resource_base*>(resource));
-      }
-      for (auto resource : render_task->writes_ )
-      {
-        // Find order of execution of the reads and writes to each written resource. Derealize if last.
+        if (!resource->transient()) 
+          continue;
+
+        auto        valid     = false;
+        std::size_t last_index;
+        if (!resource->readers_.empty())
+        {
+          auto last_reader = std::find_if(
+            render_tasks_.begin(), 
+            render_tasks_.end  (),
+            [&resource] (const std::unique_ptr<render_task_base>& iteratee)
+            {
+              return iteratee.get() == resource->readers_.back();
+            });
+          if(last_reader != render_tasks_.end())
+          {
+            valid      = true;
+            last_index = std::distance(render_tasks_.begin(), last_reader);
+          } 
+        }
+        if (!resource->writers_.empty())
+        {
+          auto last_writer = std::find_if(
+            render_tasks_.begin(), 
+            render_tasks_.end  (), 
+            [&resource] (const std::unique_ptr<render_task_base>& iteratee)
+            {
+              return iteratee.get() == resource->writers_.back();
+            });
+          if (last_writer != render_tasks_.end())
+          {
+            valid      = true;
+            last_index = std::max(last_index, std::size_t(std::distance(render_tasks_.begin(), last_writer)));
+          }
+        }
+
+        if (valid && render_tasks_[last_index] == render_task)
+          derealized_resources.push_back(const_cast<resource_base*>(resource));
       }
       
       timeline_.push_back(step{render_task.get(), realized_resources, derealized_resources});

@@ -1,11 +1,15 @@
-- What is a **framegraph**?
-  - A directed acyclic graph consisting of **render tasks** and **resources**.
-  - A **render task** is a compute or graphics task to be performed on the GPU.
-  - A **resource** is data created, modified or used by a **render task**.
-    - A **virtual resource** is a resource which has not yet been instantiated but contains all information necessary to do so.
-    - A **real resource** is a resource which has been instantiated (by the framegraph or through external means).
-    - A **transient** resource is a resource created, realized, unrealized and destroyed by the framegraph. It may be virtual or real.
-    - A **retained** resource is a resource which has been imported into the framegraph. It is always real and specified during construction.
+**What is a framegraph?**
+A rendering abstraction which describes a frame as a directed acyclic graph of render tasks and resources.
+  
+**What is a render task?**
+A compute or graphics task to be performed as part of a rendering pipeline.
 
-- What is next?
-  - Asynchronous render tasks (+ resource/aliasing barriers).
+**What is a resource?**
+Data created, read or written by a render task. Alternates between two states; virtual and real.
+While virtual, the resource is not instantiated but contains the necessary information to do so. 
+While real, the resource is instantiated and ready for use.
+A **transient** resource is owned, realized and virtualized by the framegraph. 
+A **retained** resource is always real and is imported into the framegraph.
+
+**What is next?**
+Asynchronous render tasks (+ resource/aliasing barriers).

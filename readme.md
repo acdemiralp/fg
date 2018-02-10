@@ -99,7 +99,9 @@ auto render_task = framegraph.add_render_task<render_task_data>(
 auto& data = render_task->data();
 ```
 
-Once all render tasks and resources are added, call `framegraph.compile()`. Then, `framegraph.execute()` in each update.
+Once all render tasks and resources are added, call `framegraph.compile()`. Then, `framegraph.execute()` in each update. It is also possible to export to GraphViz for debugging / visualization via `framegraph.export_graphviz(filename)`:
+
+![alt text](https://github.com/acdemiralp/fg/docs/images/example.png "Example Framegraph")
 
 **Next Steps** 
 - Asynchronous render tasks (+ resource / aliasing barriers).

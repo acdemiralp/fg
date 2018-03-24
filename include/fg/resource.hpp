@@ -24,10 +24,11 @@ public:
   {
     // Transient (normal) constructor.
   }
-  explicit resource  (const std::string& name,                                  const description_type& description, actual_type* actual) 
+  explicit resource  (const std::string& name,                                  const description_type& description, actual_type* actual = nullptr) 
   : resource_base(name, nullptr), description_(description), actual_(actual)
   {
     // Retained (import) constructor.
+    if(!actual) actual_ = fg::realize<description_type, actual_type>(description_);
   }
   resource           (const resource&  that) = delete ;
   resource           (      resource&& temp) = default;
@@ -41,7 +42,7 @@ public:
   }
   actual_type*            actual      () const // If transient, only valid through the realized interval of the resource.
   {
-    return transient() ? std::get<std::unique_ptr<actual_type>>(actual_).get() : std::get<actual_type*>(actual_);
+    return std::holds_alternative<std::unique_ptr<actual_type>>(actual_) ? std::get<std::unique_ptr<actual_type>>(actual_).get() : std::get<actual_type*>(actual_);
   }
 
 protected:

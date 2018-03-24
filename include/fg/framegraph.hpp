@@ -38,7 +38,7 @@ public:
     return static_cast<fg::render_task<data_type>*>(render_task);
   }
   template<typename description_type, typename actual_type>
-  resource<description_type, actual_type>* add_retained_resource(const std::string& name, const description_type& description, actual_type* actual)
+  resource<description_type, actual_type>* add_retained_resource(const std::string& name, const description_type& description, actual_type* actual = nullptr)
   {
     resources_.emplace_back(std::make_unique<resource<description_type, actual_type>>(name, description, actual));
     return static_cast<resource<description_type, actual_type>*>(resources_.back().get());

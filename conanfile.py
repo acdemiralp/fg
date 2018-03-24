@@ -4,7 +4,7 @@ import os
 
 class FgConan(ConanFile):
     name            = "fg"
-    version         = "1.0.0"					
+    version         = "1.1.0"					
     description     = "Conan package for fg."												 
     url             = "https://github.com/acdemiralp/fg"
     license         = "MIT"

@@ -1,7 +1,7 @@
 **What is a framegraph?** 
 
 A rendering abstraction which describes a frame as a directed acyclic graph of render tasks and resources.
-Based on the [Game Developers Conference (GDC) presentation by Yuriy O’Donnell](https://www.gdcvault.com/play/1024612/FrameGraph-Extensible-Rendering-Architecture-in).
+Based on the [Game Developers Conference (GDC) presentation by Yuriy Oâ€™Donnell](https://www.gdcvault.com/play/1024612/FrameGraph-Extensible-Rendering-Architecture-in).
 
 **What is a render task?** 
 
@@ -101,7 +101,9 @@ auto& data = render_task->data();
 
 Once all render tasks and resources are added, call `framegraph.compile()`. Then, `framegraph.execute()` in each update. It is also possible to export to GraphViz for debugging / visualization via `framegraph.export_graphviz(filename)`:
 
-![alt text](https://github.com/acdemiralp/fg/blob/develop/docs/images/example.png "Example Framegraph")
+![alt text](https://github.com/acdemiralp/fg/blob/develop/docs/images/example1.png "Example 1")
+
+![alt text](https://github.com/acdemiralp/fg/blob/develop/docs/images/example2.png "Example 2")
 
 **Next Steps** 
 - Asynchronous render tasks (+ resource / aliasing barriers).
